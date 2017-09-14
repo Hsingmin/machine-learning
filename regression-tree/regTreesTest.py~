@@ -1,0 +1,67 @@
+
+# regTreesTest.py
+
+import regTrees
+from numpy import *
+
+'''
+testMat = mat(eye(4))
+print('-------- mat test testMat : ')
+print(testMat)
+
+mat0, mat1 = regTrees.binSplitDataSet(testMat, 1, 0.5)
+print('-------- mat test mat0 : ')
+print(mat0)
+
+print('-------- mat test mat1 : ')
+print(mat1)
+'''
+
+myDat = regTrees.loadDataSet('ex00.txt')
+tMat = mat(myDat)
+
+print('-------- loadDataSet regLeaf : ')
+print(regTrees.regLeaf(tMat))
+
+print('-------- loadDataSet regErr : ')
+print(regTrees.regErr(tMat))
+
+print('-------- binSplitDataSet(dataSet)')
+print('-------- tMat : ')
+# print(tMat)
+print('-------- tMat SLICE : ')
+# print(tMat[:, -1])
+Mat0, Mat1 = regTrees.binSplitDataSet(tMat, 0, 0.48813)
+
+
+
+'''
+print('-------- MAT0 : ')
+print(Mat0)
+print('-------- MAT1 : ')
+print(Mat1)
+'''
+myTree = regTrees.createTree(tMat)
+
+print('-------- regTree createTree : ')
+print(myTree)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
