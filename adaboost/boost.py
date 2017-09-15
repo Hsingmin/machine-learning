@@ -15,7 +15,7 @@ def stumpClassify(dataMatrix, dimen, threshVal, threshIneq):
 	return retArray
 
 def buildStump(dataArray, classLabels, D):
-	dataMatrix = mat(dataArr); labelMat = mat(classLabels).T
+	dataMatrix = mat(dataArray); labelMat = mat(classLabels).T
 	m, n = shape(dataMatrix)
 
 	numSteps = 10.0; bestStump = {}; bestClassEst = mat(zeros((m, 1)))
