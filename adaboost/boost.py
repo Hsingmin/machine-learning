@@ -4,6 +4,7 @@
 from numpy import *
 import matplotlib.pyplot as plt
 
+# find the best simple stump
 def stumpClassify(dataMatrix, dimen, threshVal, threshIneq):
 	retArray = ones((shape(dataMatrix)[0], 1))
 
@@ -45,7 +46,7 @@ def buildStump(dataArray, classLabels, D):
 	return bestStump, minError, bestClassEst
 
 		
-def adaBoostTrainDS(dataArr, classLabels, numIt = 40):
+def adaBoostTrainDS(dataArr, classLabels, numInt = 40):
 	weakClassArr = []
 	m = shape(dataArr)[0]
 	D = mat(ones((m, 1))/ m)
@@ -70,7 +71,7 @@ def adaBoostTrainDS(dataArr, classLabels, numIt = 40):
 		if(errorRate == 0.0):
 			break
 
-	return weakClassArr
+	return weakClassArr, aggClassEst
 
 def adaClassify(datToClass, classifierArr):
 	dataMatrix = mat(datToClass)
