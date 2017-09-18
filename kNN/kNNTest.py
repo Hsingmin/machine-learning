@@ -1,0 +1,45 @@
+
+# kNNTest.py
+
+import kNN
+
+group, labels = kNN.ceateDataSet()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
