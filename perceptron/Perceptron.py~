@@ -1,153 +1,67 @@
 
-# Perceptron 
+# perceptron.py
 
-from functools import reduce
+import random
 
-class Perceptron(object):
-	def __init__(self, input_num, activator):
-		'''
-		initialize perceptron, set no. of params and activator
-		activator dtype : double -> double
-		'''
-		
-		self.activator = activator
-		
-		# set weights vecs(input_num * 1) to 0
-		self.weights = [0.0 for _ in range(input_num)]
+def sign(v):
+    if v > 0:
+        return 1
+    else:
+        return -1
 
-		# set bias to 0
-		self.bias = 0.0
 
-	def __str__(self):
-		'''
-		print out the weights and bias
-		'''
-		return 'weights\t : %s\nbias\t : %f\n' % (self.weights, self.bias)
+def training():
+    train_data1 = [[1, 3, 1], [2, 5, 1], [3, 8, 1], [2, 6, 1]] 
+    train_data2 = [[3, 1, -1], [4, 1, -1], [6, 2, -1], [7, 3, -1]]
+    train_datas = train_data1 + train_data2
 
-	def predict(self, input_vec):
-		'''
-		input vecs, output predict values
-		'''
-		# zip input_vec[x1, x2, x3, ...] and weights[w1, w2, w3, ...]
-		# turned into [(x1, w1), (x2, w2), (x3, w3), ...]
-		# map function get [x1*w1, x2*w2, x3*w3, ...]
-		# reduce function to get sum
+    weight = [0, 0]  
+    bias = 0  
+    learning_rate = 0.5  
 
-		# print('UPDATED WEIGHTS : ')
-		# for each in self.weights:
-		# 	print(each)
-		# print('UPDATED BIAS : ')
-		# print(self.bias)
-		# print('+++++++++++++++++++++++++++++++++')
+    train_num = int(input("train num: "))  
 
-		return self.activator(\
-				reduce(lambda a, b : a + b, \
-				map(lambda x_w : x_w[0] * x_w[1], \
-				zip(input_vec, self.weights)), \
-				0.0) + self.bias)
+    for i in range(train_num):
+        train = random.choice(train_datas)
+        x1, x2, y = train
+        predict = sign(weight[0] * x1 + weight[1] * x2 + bias)  
+        print("train data: x: (%d, %d) y: %d  ==> predict: %d" % (x1, x2, y, predict))
+        if y * predict <= 0:  
+            weight[0] = weight[0] + learning_rate * y * x1  
+            weight[1] = weight[1] + learning_rate * y * x2
+            bias = bias + learning_rate * y  
+            print("update weight and bias: "),
+            print(weight[0], weight[1], bias)
 
-	def train(self, input_vecs, labels, iteration, rate):
-		'''
-		input train data : a group of vecs and corresponding label
-		training rounds and ita
-		'''
-		for i in range(iteration):
-			self._one_iteration(input_vecs, labels, rate)
+    print("stop training: "),
+    print(weight[0], weight[1], bias)
 
-	def _one_iteration(self, input_vecs, labels, rate):
-		'''
-		one iteration
-		'''
+    return weight, bias
 
-		# zip input data and output data into [(input_vec, label), ...]
-		# training sample as (input_vec, label)
-		samples = zip(input_vecs, labels)
-		
-		# for each in samples:
-			# print(each)
-		# update weights to each sample
-		for (input_vec, label) in samples :
-			
-			# get output of perceptron of current weights
-			print(input_vec)
-			print(label)
-			output = self.predict(input_vec)
-			print('_one_iteration_ : output = ')
-			print(output)
-			# update weights
-			self._update_weights(input_vec, output, label, rate)
 
-	def _update_weights(self, input_vec, output, label, rate):
-		'''
-		update weights
-		'''
+# test
+def test():
+    weight, bias = training()
+    while True:
+        test_data = []
+        data = input('enter test data (x1, x2): ')
+        if data == 'q': break
+        test_data += [int(n) for n in data.split(',')]
+        predict = sign(weight[0] * test_data[0] + weight[1] * test_data[1] + bias)
+        print("predict ==> %d" % predict)
 
-		# zip input_vec[x1, x2, x3, ...] and weights[w1, w2, w3, ...]
-		# turned into [(x1, w1), (x2, w2), (x3, w3), ...]
-		# update weights
-		delta = label - output
 
-		self.weights = map(lambda x_w : x_w[1] + rate * delta * x_w[0], \
-				zip(input_vec, self.weights))
 
-		print('weights and bias : ')
-		for each in self.weights:
-			print(each)
-		# update bias
-		self.bias += rate * delta
-		print(self.bias)
 
-def f(x):
-	'''
-	activator
-	'''
-	return 1 if x > 0 else 0
 
-def get_training_dataset():
 
-	'''
-	get training dataset based on TRUE-FALSE table
-	'''
-	input_vecs = [[1,1], [0,0], [1,0], [0,1]]
 
-	# expected output
-	labels = [1, 0, 0, 0]
 
-	return input_vecs, labels
 
-def train_and_perceptron():
-	
-	'''
-	train data based on TRUE-FALSE table
-	'''
 
-	# create a perceptron
-	p = Perceptron(2, f)
 
-	# train and iterate 100 rounds ita = 0.1
-	input_vecs, labels = get_training_dataset()
-	
-	# print(input_vecs)
-	# print(labels)
 
-	p.train(input_vecs, labels, 10, 0.1)
 
-	return p
-
-if __name__ == '__main__':
-
-	# train and-perceptron
-	and_perception = train_and_perceptron()
-
-	print(and_perception)
-
-	print('1 and 1 = %d' % and_perception.predict([1,1]))
-
-	print('1 and 0 = %d' % and_perception.predict([1,0]))
-
-	print('0 and 1 = %d' % and_perception.predict([0,1]))
-	
-	print('0 and 0 = %d' % and_perception.predict([0,0]))
 
 
 

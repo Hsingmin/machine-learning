@@ -4,31 +4,33 @@
 from numpy import *
 import operator
 
+from os import listdir
+
 def createDataSet():
 	group = array([[1.0, 1.1], [1.0, 1.0], [0, 0], [0, 0.1]])
-	labels = ['A', 'B', 'B', 'B']
+	labels = ['A', 'A', 'B', 'B']
 	return group, labels
 
 def classify0(inX, dataSet, labels, k):
 	dataSetSize = dataSet.shape[0]
-	diffMat = title(inX, (dataSetSize, 1)) - dataSet
+	diffMat = tile(inX, (dataSetSize, 1)) - dataSet
 	sqDiffMat = diffMat ** 2
 	sqDistances = sqDiffMat.sum(axis = 1)
 	distances = sqDistances ** 0.5
-	sortedDisIndices = distances.argsort()
+	sortedDistIndicies = distances.argsort()
 	classCount = {}
 	for i in range(k):
 		voteIlabel = labels[sortedDistIndicies[i]]
 		classCount[voteIlabel] = classCount.get(voteIlabel, 0) + 1
 	
-	sortedClassCount = sorted(classCount.iteritems(),\
+	sortedClassCount = sorted(classCount.items(),\
 			key = operator.itemgetter(1), reverse = True)
 
 	return sortedClassCount[0][0]
 
 def file2matrix(filename):
 	fr = open(filename)
-	arrayOLines = fr.reanlines()
+	arrayOLines = fr.readlines()
 	numberOfLines = len(arrayOLines)
 	returnMat = zeros((numberOfLines, 3))
 	classLabelVector = []
@@ -49,15 +51,15 @@ def autoNorm(dataSet):
 	ranges = maxVals - minVals
 	normDataSet = zeros(shape(dataSet))
 	m = dataSet.shape[0]
-	normDataSet = dataSet - title(minVals, (m, 1))
-	normDataSet = normDataSet / title(ranges, (m, 1))
+	normDataSet = dataSet - tile(minVals, (m, 1))
+	normDataSet = normDataSet / tile(ranges, (m, 1))
 
 	return normDataSet, ranges, minVals
 
 
 def datingClassTest():
 	hoRatio = 0.10
-	datingDataMat, datingLabels = file2matrix('datingTestSet.txt')
+	datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
 	normMat, ranges, minVals = autoNorm(datingDataMat)
 	m = normMat.shape[0]
 	numTestVecs = int(m * hoRatio)
@@ -72,17 +74,17 @@ def datingClassTest():
 		if(classifierResult != datingLabels[i]):
 			errorCount += 1.0
 
-	print('the total error rate is %f' %(errorCount / float(numberTestVecs)))
+	print('the total error rate is %f' %(errorCount / float(numTestVecs)))
 
 
 def classifyPerson():
 	resultList = ['not at all', 'in small doses', 'in large doses']
-	percentTats = float(raw_input(\
+	percentTats = float(input(\
 			"percentage of time spent playing video games?"))
-	ffMiles = float(raw_input("frequent flier miles earned per year?"))
-	iceCream = float(raw_input("liter of ice cream consumed per year?"))
+	ffMiles = float(input("frequent flier miles earned per year?"))
+	iceCream = float(input("liter of ice cream consumed per year?"))
 	datingDataMat, datingLabels = file2matrix('datingTestSet2.txt')
-	norMat, ranges, minVals = autoNorm(datingDataMat)
+	normMat, ranges, minVals = autoNorm(datingDataMat)
 	inArr = array([ffMiles, percentTats, iceCream])
 	classifierResult = classify0((inArr - minVals) / ranges, normMat, datingLabels, 3)
 	print('you will probably like this person : ', resultList[classifierResult - 1 ])
@@ -100,7 +102,7 @@ def img2vector(filename):
 
 def handwritingClassTest():
 	hwLabels = []
-	trainingFileList = listdir('trainingDigits')
+	trainingFileList = listdir('digits/trainingDigits')
 	m = len(trainingFileList)
 	trainingMat = zeros((m, 1024))
 	for i in range(m):
@@ -110,7 +112,7 @@ def handwritingClassTest():
 		hwLabels.append(classNumStr)
 		trainingMat[i, :] = img2vector('trainingDigits / %s' %fileNameStr)
 
-	testFileList = listdir('testDigits')
+	testFileList = listdir('digits/testDigits')
 	errorCount = 0.0
 	mTest = len(testFileList)
 	for i in range(mTest):
