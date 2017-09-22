@@ -1,6 +1,8 @@
 
 # bayes.py
 
+from numpy import *
+
 def loadDataSet():
 	postingList = [['my', 'dog', 'has', 'flea', 'problems', 'help', 'please'],
                  ['maybe', 'not', 'take', 'him', 'to', 'dog', 'park', 'stupid'],
@@ -20,7 +22,7 @@ def createVocabList(dataSet):
 
 	return list(vocabSet)
 
-def setOfWord2Vec(vocabList, inputSet):
+def setOfWords2Vec(vocabList, inputSet):
 	returnVec = [0] * len(vocabList)
 	for word in inputSet:
 		if word in vocabList:
@@ -34,19 +36,19 @@ def trainNB0(trainMatrix, trainCategory):
 	numTrainDocs = len(trainMatrix)
 	numWords = len(trainMatrix[0])
 	pAbusive = sum(trainCategory) / float(numTrainDocs)
-	p0Num = zeros(numWords); p1Num = zeros(numWords)
-	p0Denom = 0.0; p1Denom = 0.0
+	p0Num = ones(numWords); p1Num = ones(numWords)
+	p0Denom = 2.0; p1Denom = 2.0
 
 	for i in range(numTrainDocs):
-		if trainCatagory[i] == 1:
+		if trainCategory[i] == 1:
 			p1Num += trainMatrix[i]
 			p1Denom += sum(trainMatrix[i])
 		else:
 			p0Num += trainMatrix[i]
 			p0Denom += sum(trainMatrix[i])
 
-	p1Vect = p1Num / p1Denom
-	p0Vect = p0Num / p0Denom
+	p1Vect = log(p1Num / p1Denom)
+	p0Vect = log(p0Num / p0Denom)
 
 	return p0Vect, p1Vect, pAbusive
 
@@ -67,7 +69,7 @@ def testingNB():
 	for postinDoc in listOPosts:
 		trainMat.append(setOfWords2Vec(myVocabList, postinDoc))
 	p0V, p1V, pAb = trainNB0(array(trainMat), array(listClasses))
-	testEntry = ['love', 'my', 'dalmation']
+	testEntry = ['', '', '']
 	thisDoc = array(setOfWords2Vec(myVocabList, testEntry))
 
 	print(testEntry, 'classified as : ', classifyNB(thisDoc, p0V, p1V, pAb))
@@ -158,7 +160,9 @@ def localWords(feed1, feed0):
 	for pairW in top30Words:
 		if pairW[0] in vocabList :
 			vocabList.remove(pairW[0])
-	trainingSet = range(2 * minLen); testSet = []
+	#trainingSet = range(2 * minLen); 
+	trainingSet = range(50)
+	testSet = []
 	for i in range(20):
 		randIndex = int(random.uniform(0, len(trainingSet)))
 		testSet.append(trainingSet[randIndex])
