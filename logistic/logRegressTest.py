@@ -5,12 +5,12 @@ import logRegres
 
 dataArray, labelMat = logRegres.loadDataSet()
 
-print('dataArray : ', dataArray)
-print('labelArray : ', labelArray)
+# print('dataArray : ', dataArray)
+# print('labelArray : ', labelMat)
 
-print(logRegres.gradAscent(dataArray, labelMat))
+weights = (logRegres.gradAscent(dataArray, labelMat))
 
-
+logRegres.plotBestFit(weights.getA())
 
 
 
