@@ -1,0 +1,78 @@
+
+# regression.py
+
+from numpy import *
+
+def loadDataSet(fileName):
+	numFeat = len(open(fileName).readline().strip().split('\t')) - 1
+	dataMat = []; labelMat = []
+	fr = open(fileName)
+	for line in fr.readlines():
+		lineArray = []
+		currLine = line.strip().split('\t')
+		for i in range(numFeat):
+			lineArray.append(currLine[i])
+		dataMat.append(lineArray)
+		labelMat.append(float(curLine[-1]))
+	
+	return dataMat, labelMat
+
+def standRegres(xArray, yArray):
+	xMat = mat(xArray); yMat = mat(yArray).T
+	xTx = xMat.T * xMat
+	if linalg.det(xTx) == 0.0:
+		print('This matrix is singular, cannot do inverse')
+		return 
+
+	ws = xTx.I * (xMat.T * yMat)
+
+	return ws
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
