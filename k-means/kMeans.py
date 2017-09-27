@@ -90,7 +90,81 @@ def biKmeans(dataSet, k ,distMeans = distEclud):
 
 	return mat(centList), clusterAssment
 
-					
+import urllib
+import json
+
+def geoGrab(stAddress, city):
+	apiStem = 'http://where.yahooapis.com/geocode?'
+	params = {}
+	params['flag'] = 'J'
+	params['appid'] = 'ppp68N8t'
+	params['location'] = '%s %s' %(stAddress, city)
+	url_params = urllib.urlencode(params)
+	yahooApi = apiStem + url_params
+	print(yahooApi)
+	c = urllib.urlopen(yahooApi)
+	return json.loads(c.read())
+
+from time import sleep
+
+def massPlaceFind(fileName):
+	fw = open('places.txt', 'w')
+	for line in open(fileName).readlines():
+		line = line.strip()
+		lineArray = line.split('\t')
+		retDict = geoGrab(lineArray[1], lineArray[2])
+		if retDict['ResultSet']['Error'] == 0:
+			lat = float(retDict['ResultSet']['Results'][0]['latitude'])
+			lng = float(retDict['ResultSet']['Results'][0]['longitude'])
+			print('%s\t%f\t%f' %(lineArray[0], lat, lng))
+
+		else:
+			print('error fetching')
+		sleep(1)
+	fw.close()
+
+def distSLC(vecA, vecB):
+	a = sin(vecA[0, 1] * pi / 180) * sin(vecB[0, 1] * pi / 180)
+	b = cos(vecA[0, 1] * pi / 180) * cos(vecB[0, 1] * pi / 180) * \
+			cos(pi * (vecB[0, 0] - vecA[0, 0]) / 180)
+	return arccos(a + b) * 6371.0
+
+import matplotlib
+import matplotlib.pyplot as plt
+def clusterClubs(numClust = 5):
+	dataList = []
+	for line in open('place.txt').readlines():
+		lineArray = line.split('\t')
+		dataList.append([float(lineArray[4]), float(lineArray[3])])
+	datMat = mat(dataList)
+	myCentroids, clusterAssing = biKmeans(dataMat, numClust, \
+			distMeans = distSLC)
+
+	fig = plt.figure()
+	rect = [0.1, 0.1, 0.8, 0.8]
+	scatterMarkers = ['s', 'o', '^', '8', 'p', \
+			'd', 'v', 'h', '>', '<']
+
+	axprops = dict(xticks = [], yticks = [])
+	ax0 = fig.add_axes(rect, label = 'ax0', **axprops)
+	imgP = plt.imread('Portland.png')
+	ax0.imshow(imgP)
+	ax1 = fig.add_axes(rect, label = 'ax1', frameon = False)
+	for i in range(numClust):
+		ptsInCurrCluster = dataMat[nonzero(clustAssing[:, 0].A == i)[0], :]
+		markerStyle = scatterMarkers[i % len(scatterMarkers)]
+		ax1.scatter(ptsInCurrCluster[:, 0].flatten().A[0],\
+			ptsInCurrCluster[:, 1].flatteb().A[0],\
+			marker = markerStyle, s = 90)
+	ax1.scatter(myCentroids[:, 0].flatten().A[0],\
+			myCentroids[:, 1].flatten().A[0],\
+			marker = '+', s = 300)
+
+	plt.show()
+	
+		
+	
+
 
 
 
