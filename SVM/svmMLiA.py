@@ -1,6 +1,8 @@
 
 # svmMLiA.py
 
+from numpy import *
+
 def loadDataSet(fileName):
 
 	dataMat = []; labelMat = []
@@ -41,10 +43,10 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
 					(dataMatrix * dataMatrix[i, :].T)) + b
 			Ei = fXi - float(labelMat[i])
 
-			if((labelMat[i] * Ei < -toler) and (alpha[i] < C)) or\
+			if((labelMat[i] * Ei < -toler) and (alphas[i] < C)) or\
 				((labelMat[i] * Ei > toler) and (alphas[i] > 0)):
 				j = selectJrand(i, m)
-				fXi = float(multiply(alphas, labelMat).T *\
+				fXj = float(multiply(alphas, labelMat).T *\
 				(dataMatrix * dataMatrix[j, :].T)) + b
 				Ej = fXj - float(labelMat[j])
 
@@ -70,9 +72,9 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
 				alphas[j] -= labelMat[j] * (Ei - Ej) / eta
 				alphas[j] = clipAlpha(alphas[j], H, L)
 				if(abs(alphas[j] - alphaJold) < 0.00001):
-					print(j not moving enough);
+					print('j not moving enough');
 					continue
-				alphas[i] += lableMat[j] * labelMat[i] *\
+				alphas[i] += labelMat[j] * labelMat[i] *\
 				(alphaJold - alphas[j])
 
 				b1 = b - Ei - labelMat[i] * (alphas[i] - alphaIold) *\
@@ -186,40 +188,40 @@ def innerL(i, oS):
 		eta = 2.0 * oS.X[i, :] * oS.X[j, :].T - \
 				oS.X[i, :] * oS.X[i, :].T - \
 				oS.X[j, :] * oS.X[j, :].T
-				if(eta >= 0):
-					print('eta > = 0');
-					return 0
-				oS.alphas[j] -= oS.labelMat[j] * (Ei - Ej) / eta
-				oS.alphas[j] = clipAlpha(oS.alphas[j], H, L)
-				updateEk(oS, j)
-				if(abs(oS.alphas[j] - alphaJold) < 0.00001):
-					print(j not moving enough);
-					return 0
-				oS.alphas[i] += oS.lableMat[j] * oS.labelMat[i] *\
-				(alphaJold - oS.alphas[j])
+		if(eta >= 0):
+			print('eta > = 0');
+			return 0
+		oS.alphas[j] -= oS.labelMat[j] * (Ei - Ej) / eta
+		oS.alphas[j] = clipAlpha(oS.alphas[j], H, L)
+		updateEk(oS, j)
+		if(abs(oS.alphas[j] - alphaJold) < 0.00001):
+			print('j not moving enough');
+			return 0
+		oS.alphas[i] += oS.lableMat[j] * oS.labelMat[i] *\
+			(alphaJold - oS.alphas[j])
 
-				updateEk(oS, i)
+		updateEk(oS, i)
 
-				b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) *\
-				oS.X[i, :] * oS.X[i, :].T -\
-				oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
-				oS.X[i, :] * oS.X[j, :].T
+		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) *\
+			oS.X[i, :] * oS.X[i, :].T -\
+			oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
+			oS.X[i, :] * oS.X[j, :].T
 
-				b2 = oS.b - Ej - oS.labelMat[i] * (oS.alphas[i] - alphaIold) *\
-				oS.X[i, :] * oS.X[j, :].T -\
-				oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
-				oS.[j, :] * oS.X[j, :].T
+		b2 = oS.b - Ej - oS.labelMat[i] * (oS.alphas[i] - alphaIold) *\
+			oS.X[i, :] * oS.X[j, :].T -\
+			oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
+			oS.X[j, :] * oS.X[j, :].T
 
-				if(0 < oS.alphas[i]) and (oS.C > oS.alphas[i]):
-					oS.b = b1
-				elif(0 < oS.alphas[j]) and (oS.C > oS.alphas[j]):
-					oS.b = b2
-				else:
-					oS.b = (b1 + b2) / 2.0
-				return 1
+		if(0 < oS.alphas[i]) and (oS.C > oS.alphas[i]):
+			oS.b = b1
+		elif(0 < oS.alphas[j]) and (oS.C > oS.alphas[j]):
+			oS.b = b2
+		else:
+			oS.b = (b1 + b2) / 2.0
+		return 1
 
-			else:
-				return 0
+	else:
+		return 0
 
 def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup = ('lin', 0)):
 	oS = optStruct(mat(dataMatIn), mat(classLabels).transpose(), C, toler)
