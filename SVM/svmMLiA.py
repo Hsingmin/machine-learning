@@ -103,6 +103,15 @@ def smoSimple(dataMatIn, classLabels, C, toler, maxIter):
 		print('iteration number : %d' %iter)
 	return b, alphas
 
+def calcWs(alphas, dataArray, classLabels):
+	X = mat(dataArray); labelMat = mat(classLabels).transpose()
+	m, n = shape(X)
+	w = zeros((n, 1))
+	for i in range(m):
+		w += multiply(alphas[i] * labelMat[i], X[im :].T)
+
+	return w
+
 def kernelTrans(X, A, kTup):
 	m, n = shape(X)
 	K = mat(zeros((m, 1)))
