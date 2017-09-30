@@ -11,6 +11,7 @@ dataArray, labelArray = sl.loadDataSet('testSet.txt')
 
 # print(labelArray)
 
+'''
 b, alphas = sl.smoSimple(dataArray, labelArray, 0.6, 0.001, 40)
 
 # print('b = ', b)
@@ -20,8 +21,9 @@ for i in range(100):
 	if alphas[i] > 0.0:
 		print(dataArray[i], labelArray[i])
 
+'''
 
-
+b, alphas = sl.smoP(dataArray, labelArray, 0.6, 0.001, 40)
 
 
 

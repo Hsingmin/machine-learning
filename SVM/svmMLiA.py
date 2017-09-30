@@ -173,7 +173,8 @@ def updateEk(oS, k):
 	Ek = calcEk(oS, k)
 	oS.eCache[k] = [1, Ek]
 
-
+# Override
+# dataMat labelMat replaced by oS.X and oS.labelMat
 def innerL(i, oS):
 	Ei = calcEk(oS, i)
 	if((oS.labelMat[i] * Ei < -oS.tol) and (oS.alphas[i] < oS.C)) or \
