@@ -127,8 +127,9 @@ def kernelTrans(X, A, kTup):
 				That Kernel is not Recognized')
 	return K
 
+# Platt SMO support function
 class optStruct:
-	def __init__(self, dataMatIn, classLabels, C, toler, kTup):
+	def __init__(self, dataMatIn, classLabels, C, toler):
 		self.X = dataMatIn
 		self.labelMat = classLabels
 		self.C = C
@@ -137,9 +138,9 @@ class optStruct:
 		self.alphas = mat(zeros((self.m, 1)))
 		self.b = 0
 		self.eCache = mat(zeros((self.m, 2)))
-		self.K = mat(zeros((self.m, self.m)))
-		for i in range(self.m):
-			self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
+		# self.K = mat(zeros((self.m, self.m)))
+		# for i in range(self.m):
+		# 	self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
 
 def calcEk(oS, k):
 	fXk = float(multiply(oS.alphas, oS.labelMat).T *\
@@ -207,7 +208,7 @@ def innerL(i, oS):
 		if(abs(oS.alphas[j] - alphaJold) < 0.00001):
 			print('j not moving enough');
 			return 0
-		oS.alphas[i] += oS.lableMat[j] * oS.labelMat[i] *\
+		oS.alphas[i] += oS.labelMat[j] * oS.labelMat[i] *\
 			(alphaJold - oS.alphas[j])
 
 		updateEk(oS, i)
@@ -243,18 +244,18 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup = ('lin', 0)):
 			for i in range(oS.m):
 				alphaPairsChanged += innerL(i, oS)
 				print('fullSet, iter : %d i : %d, pairs changed %d' \
-						%(iter, alphaPairsChanged))
+						%(iter, i, alphaPairsChanged))
 			iter += 1
 
 		else:
-			nonBoundIs = nonzeros((oS.alphas.A > 0) * (oS.alpha.A < C))[0]
+			nonBoundIs = nonzero((oS.alphas.A > 0) * (oS.alphas.A < C))[0]
 			for i in nonBoundIs:
 				alphaPairsChanged += innerL(i, oS)
 				print('non-bound, iter : %d i %d, pairs changed %d' \
-						%(iter, alphaPairsChanged))
+						%(iter, i, alphaPairsChanged))
 			iter += 1
 
-		if(enireSet):
+		if(entireSet):
 			entireSet = False
 		elif(alphaPairsChanged == 0):
 			entireSet = True
