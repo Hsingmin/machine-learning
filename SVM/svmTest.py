@@ -25,7 +25,16 @@ for i in range(100):
 
 b, alphas = sl.smoP(dataArray, labelArray, 0.6, 0.001, 40)
 
+ws = sl.calcWs(alphas, dataArray, labelArray)
+print('ws : ', ws)
 
+dataMat = mat(dataArray)
+print('first data label : ', dataMat[0] * mat(ws) + b)
+print('labelArray[0] = ', labelArray[0])
+
+print('labelArray[1] = ', labelArray[0])
+
+print('labelArray[2] = ', labelArray[0])
 
 
 
