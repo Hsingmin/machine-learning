@@ -129,7 +129,7 @@ def kernelTrans(X, A, kTup):
 
 # Platt SMO support function
 class optStruct:
-	def __init__(self, dataMatIn, classLabels, C, toler):
+	def __init__(self, dataMatIn, classLabels, C, toler, kTup):
 		self.X = dataMatIn
 		self.labelMat = classLabels
 		self.C = C
@@ -138,9 +138,9 @@ class optStruct:
 		self.alphas = mat(zeros((self.m, 1)))
 		self.b = 0
 		self.eCache = mat(zeros((self.m, 2)))
-		# self.K = mat(zeros((self.m, self.m)))
-		# for i in range(self.m):
-		# 	self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
+		self.K = mat(zeros((self.m, self.m)))
+		for i in range(self.m):
+			self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
 
 def calcEk(oS, k):
 	fXk = float(multiply(oS.alphas, oS.labelMat).T *\
@@ -266,7 +266,7 @@ def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup = ('lin', 0)):
 def calcWs(alphas, dataArray, classLabels):
 	X = mat(dataArray); labelMat = mat(classLabels).transpose()
 	m, n = shape(X)
-	w  = zeros((m, 1))
+	w  = zeros((n, 1))
 	for i in range(m):
 		w += multiply(alphas[i] * labelMat[i], X[i, :].T)
 	return w
