@@ -112,6 +112,8 @@ def calcWs(alphas, dataArray, classLabels):
 
 	return w
 
+# Gaussian Kernel Function
+
 def kernelTrans(X, A, kTup):
 	m, n = shape(X)
 	K = mat(zeros((m, 1)))
