@@ -144,9 +144,10 @@ class optStruct:
 		for i in range(self.m):
 			self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
 
+# modified by list 6-7
 def calcEk(oS, k):
 	fXk = float(multiply(oS.alphas, oS.labelMat).T *\
-		(oS.X *  oS.X[k, :].T)) + oS.b
+		oS.K[:, k] + oS.b)
 	Ek = fXk - float(oS.labelMat[k])
 
 	return Ek
@@ -198,9 +199,14 @@ def innerL(i, oS):
 			print('L == H');
 			return 0
 
-		eta = 2.0 * oS.X[i, :] * oS.X[j, :].T - \
-				oS.X[i, :] * oS.X[i, :].T - \
-				oS.X[j, :] * oS.X[j, :].T
+		# modified by list 6-7
+		# eta = 2.0 * oS.X[i, :] * oS.X[j, :].T - \
+		# 		oS.X[i, :] * oS.X[i, :].T - \
+		# 		oS.X[j, :] * oS.X[j, :].T
+		
+		eta = 2.0 * oS.K[i, j] - oS.K[i, i] - oS.K[j, j]
+
+		
 		if(eta >= 0):
 			print('eta > = 0');
 			return 0
@@ -214,7 +220,8 @@ def innerL(i, oS):
 			(alphaJold - oS.alphas[j])
 
 		updateEk(oS, i)
-
+		
+		'''
 		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) *\
 			oS.X[i, :] * oS.X[i, :].T -\
 			oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
@@ -224,6 +231,12 @@ def innerL(i, oS):
 			oS.X[i, :] * oS.X[j, :].T -\
 			oS.labelMat[j] * (oS.alphas[j] - alphaJold) *\
 			oS.X[j, :] * oS.X[j, :].T
+		'''
+		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * \
+			oS.K[i, i] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[i, j]
+
+		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * \
+			oS.K[i, j] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[j, j]
 
 		if(0 < oS.alphas[i]) and (oS.C > oS.alphas[i]):
 			oS.b = b1
