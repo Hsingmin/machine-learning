@@ -5,7 +5,7 @@ from numpy import *
 
 import svmMLiA as sl
 
-dataArray, labelArray = sl.loadDataSet('testSet.txt')
+# dataArray, labelArray = sl.loadDataSet('testSet.txt')
 
 # print(dataArray)
 
@@ -21,7 +21,7 @@ for i in range(100):
 	if alphas[i] > 0.0:
 		print(dataArray[i], labelArray[i])
 
-'''
+
 
 b, alphas = sl.smoP(dataArray, labelArray, 0.6, 0.001, 40)
 
@@ -36,11 +36,11 @@ print('labelArray[1] = ', labelArray[0])
 
 print('labelArray[2] = ', labelArray[0])
 
+'''
+# sl.testRbf()
 
-
-
-
-
+# k1 = 10 to get the smallest test-error
+sl.testDigits(('rbf', 10))
 
 
 

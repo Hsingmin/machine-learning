@@ -140,6 +140,8 @@ class optStruct:
 		self.alphas = mat(zeros((self.m, 1)))
 		self.b = 0
 		self.eCache = mat(zeros((self.m, 2)))
+
+		# Gaussion Kernel function used
 		self.K = mat(zeros((self.m, self.m)))
 		for i in range(self.m):
 			self.K[:, i] = kernelTrans(self.X, self.X[i, :], kTup)
@@ -235,7 +237,7 @@ def innerL(i, oS):
 		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * \
 			oS.K[i, i] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[i, j]
 
-		b1 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * \
+		b2 = oS.b - Ei - oS.labelMat[i] * (oS.alphas[i] - alphaIold) * \
 			oS.K[i, j] - oS.labelMat[j] * (oS.alphas[j] - alphaJold) * oS.K[j, j]
 
 		if(0 < oS.alphas[i]) and (oS.C > oS.alphas[i]):
@@ -250,7 +252,7 @@ def innerL(i, oS):
 		return 0
 
 def smoP(dataMatIn, classLabels, C, toler, maxIter, kTup = ('lin', 0)):
-	oS = optStruct(mat(dataMatIn), mat(classLabels).transpose(), C, toler)
+	oS = optStruct(mat(dataMatIn), mat(classLabels).transpose(), C, toler, kTup)
 	iter = 0
 	entireSet = True; alphaPairsChanged = 0
 	while(iter < maxIter) and ((alphaPairsChanged > 0) or (entireSet)):
@@ -300,7 +302,7 @@ def testRbf(k1 = 1.3):
 	errorCount = 0
 	for i in range(m):
 		kernelEval = kernelTrans(sVs, dataMat[i, :], ('rbf', k1))
-		predict = kernelEval.T * multiply(labelSv, alphas[svInd]) + b
+		predict = kernelEval.T * multiply(labelSV, alphas[svInd]) + b
 		if(sign(predict) != sign(labelArray[i])):
 			errorCount += 1
 	print('the training error rate is %f ' %(float(errorCount) / m))
@@ -316,6 +318,15 @@ def testRbf(k1 = 1.3):
 			errorCount += 1
 	print('the test error rate is %f' %(float(errorCount) / m))
 
+def img2vector(filename):
+	returnVect = zeros((1, 1024))
+	fr = open(filename)
+	for i in range(32):
+		lineStr = fr.readline()
+		for j in range(32):
+			returnVect[0, 32 * i + j] = int(lineStr[j])
+	return returnVect
+
 def loadImages(dirName):
 	from os import listdir
 	hwLabels = []
@@ -329,7 +340,7 @@ def loadImages(dirName):
 		if(classNumStr == 9):
 			hwLabels.append(-1)
 		else:
-			hwLabels.append(-1)
+			hwLabels.append(1)
 
 		trainingMat[i, :] = img2vector('%s/%s' %(dirName, fileNameStr))
 	return trainingMat, hwLabels
