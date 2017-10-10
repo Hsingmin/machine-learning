@@ -13,7 +13,7 @@ def loadDataSet(fileName):
 		for i in range(numFeat):
 			lineArray.append(currLine[i])
 		dataMat.append(lineArray)
-		labelMat.append(float(curLine[-1]))
+		labelMat.append(float(currLine[-1]))
 	
 	return dataMat, labelMat
 
