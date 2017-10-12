@@ -63,7 +63,7 @@ def ridgeRegres(xMat, yMat, lam = 0.2):
 		print('This Matrix is singular, cannot do inverse')
 		return
 
-	ws = denom.I * (xMat.T * xMat)
+	ws = denom.I * (xMat.T * yMat)
 	return ws
 
 def ridgeTest(xArray, yArray):

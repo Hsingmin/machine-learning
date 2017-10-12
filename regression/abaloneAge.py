@@ -3,6 +3,8 @@
 
 import regression
 
+import matplotlib.pyplot as plt
+
 from numpy import *
 
 abX, abY = regression.loadDataSet('abalone.txt')
@@ -34,8 +36,14 @@ ws = regression.standRegres(abX[0 : 99], abY[ 0 : 99])
 yHat = mat(abX[100 : 199]) * ws
 print(regression.rssError(abY[100 : 199], yHat.T.A))
 
+print(' ---- ridge regression with group of lambdas : ---- ')
 
+ridgeWeights = regression.ridgeTest(abX, abY)
 
+fig = plt.figure()
+ax = fig.add_subplot(111)
+ax.plot(ridgeWeights)
+plt.show()
 
 
 
