@@ -1,12 +1,21 @@
 
 # kmeansTest.py
 
+import kMeans
 
+from numpy import *
 
+dataMat = mat(kMeans.loadDataSet('testSet.txt'))
 
+print('min(dataMat[:, 0]) = ', min(dataMat[:, 0]))
 
+print('min(dataMat[:, 1]) = ', min(dataMat[:, 1]))
 
+print('max(dataMat[:, 0]) = ', max(dataMat[:, 0]))
 
+print('max(dataMat[:, 1]) = ', max(dataMat[:, 1]))
+
+print(kMeans.randCent(dataMat, 2))
 
 
 
