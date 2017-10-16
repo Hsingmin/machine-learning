@@ -44,7 +44,7 @@ def kMeans(dataSet, k, distMeans = distEclud, createCent = randCent):
 		print(centroids)
 
 		for cent in range(k):
-			ptsInClust = dataSet[nonzero(clusterAssment[:, 0].A == cent)[0]]
+			ptsInCluster = dataSet[nonzero(clusterAssment[:, 0].A == cent)[0]]
 			centroids[cent, :] = mean(ptsInCluster, axis = 0)
 
 	return centroids, clusterAssment
@@ -64,13 +64,13 @@ def biKmeans(dataSet, k ,distMeans = distEclud):
 			ptsInCurrCluster = \
 			dataSet[nonzero(clusterAssment[:, 0].A == i)[0], :]
 			centroidMat, splitClustAss = \
-			kMeans(ptsInCluster, 2, distMeans)
+			kMeans(ptsInCurrCluster, 2, distMeans)
 			sseSplit = sum(splitClustAss[:, 1])
 			sseNotSplit = \
 			sum(clusterAssment[nonzero(clusterAssment[:, 0].A != i)[0], 1])
 			print('sseSplit, and notSplit : ', sseSplit, sseNotSplit)
 
-			if(sseSplit + sseNotSplit) < lowestSSe:
+			if(sseSplit + sseNotSplit) < lowestSSE:
 				bestCentToSplit = i
 				bestNewCents = centroidMat
 				bestClustAss = splitClustAss.copy()
@@ -86,9 +86,9 @@ def biKmeans(dataSet, k ,distMeans = distEclud):
 		centList[bestCentToSplit] = bestNewCents[0, :]
 		centList.append(bestNewCents[1, :])
 		clusterAssment[nonzero(clusterAssment[:, 0].A == \
-				bestCentToSplit)[0], :] = bestClusterAss
+				bestCentToSplit)[0], :] = bestClustAss
 
-	return mat(centList), clusterAssment
+	return (centList), clusterAssment
 
 import urllib
 import json
