@@ -17,7 +17,7 @@ class treeNode:
 		self.count += numOccur
 
 	def disp(self, ind = 1):
-		print(' ' * ind, self.name, ' ', self.count)
+		print('    ' * ind, self.name, '  ', self.count)
 		for child in self.children.values():
 			child.disp(ind + 1)
 
@@ -71,13 +71,14 @@ def updateHeader(nodeToTest, targetNode):
 
 
 def loadSimpDat():
-	simpDat = [['r', 'z', 'h', 'j', 'p'],
-               ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],
-               ['z'],
-               ['r', 'x', 'n', 'o', 's'],
-               ['y', 'r', 'x', 'z', 'q', 't', 'p'],
+	simpDat = [['r', 'z', 'h', 'j', 'p'],\
+               ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],\
+               ['z'],\
+               ['r', 'x', 'n', 'o', 's'],\
+               ['y', 'r', 'x', 'z', 'q', 't', 'p'],\
                ['y', 'z', 'x', 'e', 'q', 's', 't', 'm']]
-    	return simpDat
+	
+	return simpDat
 
 def createInitSet(dataSet):
 	retDict = {}

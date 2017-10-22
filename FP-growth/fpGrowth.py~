@@ -1,6 +1,10 @@
 
 # fpGrowth.py
 
+from numpy import *
+from time import sleep
+import re
+
 class treeNode:
 	def __init__(self, nameValue, numOccur, parentNode):
 		self.name = nameValue
@@ -67,13 +71,14 @@ def updateHeader(nodeToTest, targetNode):
 
 
 def loadSimpDat():
-	simpDat = [['r', 'z', 'h', 'j', 'p'],
-               ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],
-               ['z'],
-               ['r', 'x', 'n', 'o', 's'],
-               ['y', 'r', 'x', 'z', 'q', 't', 'p'],
+	simpDat = [['r', 'z', 'h', 'j', 'p'],\
+               ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],\
+               ['z'],\
+               ['r', 'x', 'n', 'o', 's'],\
+               ['y', 'r', 'x', 'z', 'q', 't', 'p'],\
                ['y', 'z', 'x', 'e', 'q', 's', 't', 'm']]
-    	return simpDat
+	
+	return simpDat
 
 def createInitSet(dataSet):
 	retDict = {}
@@ -109,6 +114,7 @@ def mineTree(inTree, headearTable, minSup, prefix, freqItemList):
 
 		if(myHead != None):
 			mineTree(myCondTree, myHead, minSup, newFreqSet, freqItemList)
+
 
 
 
