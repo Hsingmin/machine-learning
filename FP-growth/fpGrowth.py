@@ -28,7 +28,8 @@ def createTree(dataSet, minSup = 1):
 		for item in trans:
 			headerTable[item] = headerTable.get(item, 0) + dataSet[trans]
 
-	for k in headerTable.keys():
+	#  for k in headerTable.keys():
+	for k in list(headerTable):
 		if headerTable[k] < minSup:
 			del(headerTable[k])
 	freqItemSet = set(headerTable.keys())
@@ -54,7 +55,7 @@ def updateTree(items, inTree, headerTable, count):
 	if items[0] in inTree.children:
 		inTree.children[items[0]].inc(count)
 	else:
-		inTree.children[items[0]] = treeNode(items[0]. count, inTree)
+		inTree.children[items[0]] = treeNode(items[0], count, inTree)
 
 		if headerTable[items[0]][1] == None:
 			headerTable[items[0]][1] = inTree.children[items[0]]
@@ -62,7 +63,7 @@ def updateTree(items, inTree, headerTable, count):
 			updateHeader(headerTable[items[0]][1], inTree.children[items[0]])
 
 	if len(items) > 1:
-		updateTree(items[1, :], inTree.children[items[0]], headerTable, count)
+		updateTree(items[1 : :], inTree.children[items[0]], headerTable, count)
 
 def updateHeader(nodeToTest, targetNode):
 	while(nodeToTest.nodeLink != None):
@@ -70,7 +71,7 @@ def updateHeader(nodeToTest, targetNode):
 	nodeToTest.nodeLink = targetNode
 
 
-def loadSimpDat():
+def loadSimpleData():
 	simpDat = [['r', 'z', 'h', 'j', 'p'],\
                ['z', 'y', 'x', 'w', 'v', 'u', 't', 's'],\
                ['z'],\
