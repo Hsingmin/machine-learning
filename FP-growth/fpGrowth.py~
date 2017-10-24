@@ -44,11 +44,11 @@ def createTree(dataSet, minSup = 1):
 		for item in transSet:
 			if item in freqItemSet:
 				localD[item] = headerTable[item][0]
-			if len(localD) > 0:
-				orderedItems = [v[0] for v in sorted(localD.items(), \
-						key = lambda p: p[1], reverse = True)]
-				updateTree(orderedItems, retTree, \
-						headerTable, count)
+		if len(localD) > 0:
+			orderedItems = [v[0] for v in sorted(localD.items(), \
+					key = lambda p: p[1], reverse = True)]
+			updateTree(orderedItems, retTree, \
+					headerTable, count)
 	return retTree, headerTable
 
 def updateTree(items, inTree, headerTable, count):
@@ -63,7 +63,7 @@ def updateTree(items, inTree, headerTable, count):
 			updateHeader(headerTable[items[0]][1], inTree.children[items[0]])
 
 	if len(items) > 1:
-		updateTree(items[1, :], inTree.children[items[0]], headerTable, count)
+		updateTree(items[1 : :], inTree.children[items[0]], headerTable, count)
 
 def updateHeader(nodeToTest, targetNode):
 	while(nodeToTest.nodeLink != None):
@@ -88,22 +88,23 @@ def createInitSet(dataSet):
 	
 	return retDict
 
-def ascendTree(leafTree, prefixPath):
+def ascendTree(leafNode, prefixPath):
 	if leafNode.parent != None:
-		prefixPath.append(leafNode.parent, prefixPath)
+		prefixPath.append(leafNode.name)
+		ascendTree(leafNode.parent, prefixPath)
 
 def findPrefixPath(basePat, treeNode):
 	condPats = {}
 	while(treeNode != None):
 		prefixPath = []
-		ascentdTree(treeNode, prefixPath)
+		ascendTree(treeNode, prefixPath)
 		if len(prefixPath) > 1:
-			condPats[frozenset(prefixPath[1, :])] = treeNode.count
+			condPats[frozenset(prefixPath[1 :])] = treeNode.count
 		treeNode = treeNode.nodeLink
 
 	return condPats
 
-def mineTree(inTree, headearTable, minSup, prefix, freqItemList):
+def mineTree(inTree, headerTable, minSup, preFix, freqItemList):
 	bigL = [v[0] for v in sorted(headerTable.items(), key = lambda p : p[1])]
 
 	for basePat in bigL:
@@ -112,6 +113,9 @@ def mineTree(inTree, headearTable, minSup, prefix, freqItemList):
 		freqItemList.append(newFreqSet)
 		condPattBases = findPrefixPath(basePat, headerTable[basePat][1])
 		myCondTree, myHead = createTree(condPattBases, minSup)
+		
+		print('conditional Tree for : ', newFreqSet)
+		myCondTree.disp(1)
 
 		if(myHead != None):
 			mineTree(myCondTree, myHead, minSup, newFreqSet, freqItemList)
