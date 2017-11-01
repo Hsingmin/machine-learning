@@ -4,6 +4,15 @@
 from numpy import *
 from numpy import linalg as la
 
+def loadExData():
+	return [[1,1,1,0,0],
+		[2,2,2,0,0],
+		[1,1,1,0,0],
+		[5,5,5,0,0],
+		[1,1,0,2,2],
+		[0,0,0,3,3],
+		[0,0,0,1,1]]
+
 def euclidSim(inA, inB):
 	return 1.0 / (1.0 + la.norm(inA - inB))
 
@@ -75,10 +84,10 @@ def printMat(inMat, thresh = 0.8):
 	for i in range(32):
 		for k in range(32):
 			if float(inMat[i, k]) > thresh:
-				print 1,
+				print(1),
 			else:
-				print 0,
-		print ' '
+				print(0),
+		print(' ')
 
 def imgCompress(numSV = 3, thresh = 0.8):
 	myl = []

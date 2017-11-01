@@ -8,7 +8,7 @@ def loadDataSet(fileName, delim = '\t'):
 	stringArray = [line.strip().split(delim) for line in fr.readlines()]
 	dataArray = [map(float, line) for line in stringArray]
 
-	return mat(dataArray)
+	return mat(list(dataArray))
 
 def pca(dataMat, topNfeat = 9999999):
 	meanVals = mean(dataMat, axis = 0)

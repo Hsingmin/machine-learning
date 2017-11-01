@@ -6,6 +6,9 @@ import matplotlib
 import matplotlib.pyplot as plt
 
 dataMat = pca.loadDataSet('testSet.txt')
+
+print(dataMat)
+
 lowDMat, reconMat = pca.pca(dataMat, 1)
 
 print('show lowDMat shape : ', shape(lowDMat))
