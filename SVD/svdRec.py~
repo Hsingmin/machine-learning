@@ -13,13 +13,26 @@ def loadExData():
 		[0,0,0,3,3],
 		[0,0,0,1,1]]
 
+def loadExData2():
+	return [[0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 5],
+           [0, 0, 0, 3, 0, 4, 0, 0, 0, 0, 3],
+           [0, 0, 0, 0, 4, 0, 0, 1, 0, 4, 0],
+           [3, 3, 4, 0, 0, 0, 0, 2, 2, 0, 0],
+	   [5, 4, 5, 0, 0, 0, 0, 5, 5, 0, 0],
+           [0, 0, 0, 0, 5, 0, 1, 0, 0, 5, 0],
+           [4, 3, 4, 0, 0, 0, 0, 5, 5, 0, 1],
+           [0, 0, 0, 4, 0, 4, 0, 0, 0, 0, 4],
+           [0, 0, 0, 2, 0, 2, 5, 0, 0, 1, 2],
+           [0, 0, 0, 0, 5, 0, 0, 0, 0, 4, 0],
+           [1, 0, 0, 0, 0, 0, 0, 1, 2, 0, 0]]
+
 def euclidSim(inA, inB):
 	return 1.0 / (1.0 + la.norm(inA - inB))
 
 def pearsSim(inA, inB):
 	if len(inA) < 3:
 		return 1.0
-	return 0.5 + 0.5 / corrcoef(inA, inB, rowvar = 0)[0][1]
+	return 0.5 + 0.5 * corrcoef(inA, inB, rowvar = 0)[0][1]
 
 def cosSim(inA, inB):
 	num = float(inA.T * inB)
