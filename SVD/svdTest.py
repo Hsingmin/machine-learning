@@ -81,9 +81,12 @@ print(sum(Sig2) * 0.9)
 print('estimated power from Sigma 1 to 3 : ')
 print(sum(Sig2[: 3]))
 '''
-
+'''
 svdMat = mat(svdRec.loadExData2())
 svdRec.recommend(svdMat, 1, estMethod = svdRec.svdEst, simMeas = svdRec.pearsSim)
+'''
 
+print('SVD compress image : ')
+svdRec.imgCompress(2)
 
 

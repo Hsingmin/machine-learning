@@ -97,30 +97,31 @@ def printMat(inMat, thresh = 0.8):
 	for i in range(32):
 		for k in range(32):
 			if float(inMat[i, k]) > thresh:
-				print(1),
+				print(1, end = "")
 			else:
-				print(0),
+				print(0, end = "")
 		print(' ')
 
 def imgCompress(numSV = 3, thresh = 0.8):
-	myl = []
+	imgLine = []
 	for line in open('0_5.txt').readlines():
 		newRow = []
 		for i in range(32):
 			newRow.append(int(line[i]))
-		myl = mat(myl)
+		imgLine.append(newRow)
+	imgMat = mat(imgLine)
 
-		print('**** original matrix ****')
-		printMat(myMat, thresh)
+	print('**** original matrix ****')
+	printMat(imgMat, thresh)
 
-		U, Sigma, VT = la.svd(myMat)
+	U, Sigma, VT = la.svd(imgMat)
 
-		SiRecon = mat(zeros((numSV, numSV)))
-		for k in range(numSV):
-			SigRecon[k, k] = Sigma[k]
-		reconMat = U[:, : numSV] * SigRecon * VT[: numSV, :]
-		print('**** reconstructed matrix using %d singular values ****' %numSV)
-		printMat(reconMat, thresh)
+	SigRecon = mat(zeros((numSV, numSV)))
+	for k in range(numSV):
+		SigRecon[k, k] = Sigma[k]
+	reconMat = U[:, : numSV] * SigRecon * VT[: numSV, :]
+	print('**** reconstructed matrix using %d singular values ****' %numSV)
+	printMat(reconMat, thresh)
 
 
 		
