@@ -9,6 +9,12 @@ __author__ = 'Lamdar'
 
 import tensorflow as tf
 
+# import numpy to get simulation data set .
+from numpy.random import RandomState
+
+# Set batch size to be 8 .
+batch_size = 8
+
 # Define variable W1 and W2 to store layer1 weights matrix and 
 # layer2 weights matrix .
 #
@@ -30,17 +36,15 @@ W2 = tf.Variable(tf.random_normal([3, 1], stddev = 1, seed = 1))
 # x = tf.constant([[0.7, 0.9]])
 #
 # Define placeholder to store input data .
-x = tf.placeholder(tf.float32, shape = (3, 2), name = "input")
+#
+# We often divide training dataset to be small batch,
+# but input all test data at one time when test the model .
+x = tf.placeholder(tf.float32, shape = (None, 2), name = "x-input")
+y_ = tf.placeholder(tf.float32, shape = (None, 1), name = "y-input")
 
 # Forward propagation to get output.
 a = tf.matmul(x, W1)
 y = tf.matmul(a, W2)
-
-init_ops = tf.global_variables_initializer()
-
-with tf.Session() as sess:
-	sess.run(init_ops)
-	print(sess.run(y, feed_dict = {x: [[0.7, 0.9], [0.1, 0.4], [0.5, 0.8]]}))
 
 # Define Loss-Function : Cross-Entropy .
 cross_entropy = -tf.reduce_mean(\
@@ -57,6 +61,38 @@ learning_rate = 0.001
 # in tensorflow.Session(train_step)
 train_step = tf.train.AdamOptimizer(learning_rate).minimize(cross_entropy)
 
+# Produce a simulation dataset shape=(128, 2) .
+rdm = RandomState(1)
+dataset_size = 128
+X = rdm.rand(dataset_size, 2)
+
+# Simulate the dataset label, (x1+x2)<1 to be negative sample, otherwise positive .
+Y = [[int(x1+x2 < 1)] for (x1, x2) in X]
+
+# Create Session to run tensorflow .
+with tf.Session() as sess:
+	init_ops = tf.global_variables_initializer()
+	sess.run(init_ops)
+
+	print(sess.run(W1))
+	print(sess.run(W2))
+
+	# Training .
+	STEPS = 5000
+	for i in range(STEPS):
+		# Pick batch_size samples to train model .
+		start = (i * batch_size) % dataset_size
+		end = min(start + batch_size, dataset_size)
+
+		# Train model on one batch .
+		sess.run(train_step, feed_dict = {x: X[start : end], y_: Y[start : end]})
+
+		if i % 1000 == 0:
+			total_cross_entropy = sess.run(cross_entropy, feed_dict = {x: X, y_: Y})
+			print("After %d Training steps, cross-entropy on whole dataset is %g" %(i, total_cross_entropy))
+
+	print(sess.run(W1))
+	print(sess.run(W2))
 
 
 
