@@ -67,6 +67,10 @@ X = rdm.rand(dataset_size, 2)
 Y = [[x1 + x2 + rdm.rand()/10.0-0.05] for (x1, x2) in X]
 
 # Model Training .
+# Different Loss-Function may produce different model, which is the key point .
+#
+# Error-Backforward-Propagation Algorithm and Gradient-Descent Algorithm , 
+# both the most important category for parameters tunning in deeplearning . 
 with tf.Session() as sess:
 	init_ops = tf.global_variables_initializer()
 	sess.run(init_ops)
@@ -78,7 +82,26 @@ with tf.Session() as sess:
 
 		print(sess.run(W1))
 
+# Step of network training .
+batch_size = N
 
+# Select a group of data as a batch for back-forward propagation .
+x = tf.placeholder(tf.float32, shape=(batch_size, 2), name='x-input')
+y_ = tf.placeholder(tf.float32, shape=(batch_size, 1), name='y-input')
+
+# Define structure of network and loss-function .
+loss = ...
+train_step = tf.train.AdamOptimizer(0.001).minimize(loss)
+
+# Train network .
+with tf.Session() as sess:
+	# Parameters initialization .
+	...
+	# Update parameters iterarily .
+	for i in range(STEPS):
+		# Randomly pick dataset with size of batch_size from train-data to get better optimization.
+		current_X, current_Y = ...
+		sess.run(train_step, feed_dict={x: current_X, y_: current_Y})
 
 
 
