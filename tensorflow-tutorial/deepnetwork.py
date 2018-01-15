@@ -105,9 +105,32 @@ with tf.Session() as sess:
 		sess.run(train_step, feed_dict={x: current_X, y_: current_Y})
 '''
 
+# Exponential Decay to set learning rate .
+# decayed_learning_rate will be used in every training step , with learning_rate 
+# is the original learning rate set by user , decay_rate is the decay factor set for 
+# decay progress , decay_steps is the decay speed .
+# decayed_learning_rate = learning_rate * decay_rate ^ (global_step / decay_steps)
+#
+# learning_rate will be transformed to be a staircase function
 
+global_step = tf.Variable(0)
 
+# Produce learning_rate with exponential_decay() .
+# Original learning_rate = 0.1, learning_rate will multiply 0.96 every 100 train iterations .
+learning_rate = tf.train.exponential_decay(0.1, global_step, 100, 0.96, staircase = True)
 
+# Tensorflow provides API to define L2 regularization function .
+'''
+w = tf.Variable(tf.random_normal([2, 1], stddev = 1, seed = 1))
+y = tf.matmul(x, w)
+loss = tf.reduce_mean(tf.square(y_ - y)) + tf.contrib.layers.l2_regularizer(lambda)(w)
+'''
+
+# Give a sample to use tensorflow.contrib.layers.l1_regularizer() and tensorflow.contrib.layers.l2_regularizer()
+weights = tf.constant([[1.0, -2.0], [-3.0, 4.0]])
+with tf.Session() as sess:
+	print(sess.run(tf.contrib.layers.l1_regularizer(.5)(weights)))
+	print(sess.run(tf.contrib.layers.l2_regularizer(.5)(weights)))
 
 
 
