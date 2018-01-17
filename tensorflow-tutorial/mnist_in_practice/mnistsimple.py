@@ -1,5 +1,5 @@
 
-# mnistpractice.py -- minist dataset recognation in practice with tensorflow .
+# mnistsimple.py -- minist dataset recognation in practice with tensorflow .
 
 from tensorflow.examples.tutorials.mnist import input_data
 
@@ -50,27 +50,38 @@ MOVING_AVERAGE_DECAY = 0.99	# Moving average decay rate .
 # model when testing .
 #
 # Modified with namescope tensorflow.variable_scope() and tensorflow.get_variable() .
-
-def interface(input_tensor, reuse=False):
-	# Use current parameter value when no average class provided .
-	if avg_class == None:
-		layer1 = tf.nn.relu(tf.matmul(input_tensor, weights1) + biases1)
-
-		# Calculate the forward progpagation value of output layer .
-		#
-		# Softmax function will be used to calculate loss function , 
-		# so activation is not put into use here .
-		# We compare all outputs to pick the result of network , therefore 
-		# it is not necessary to get the accurate value of output with softmax function .
-		return tf.matmul(layer1, weights2) + biases2
-	else:
-		# Calculate variables' MovingAverage value .
-		# And then calculate the forward propagation value .
-		layer1 = tf.nn.relu(tf.matmul(input_tensor, avg_class.average(weights1)) + avg_class.average(biases1))
-		
-		return tf.matmul(layer1, avg_class.average(weights2)) + avg_class.average(biases2)
-
 '''
+def interface(input_tensor, avg_class, reuse=False):
+	# Define variables and forward propagation of layer1 .
+	with tf.variable_scope('layer1', reuse=reuse):
+		# Create new variables or use those already created based on value of reuse .
+		# Next time change parameter reuse=True , and no necessary transfer all parameters
+		# in again .
+		weights = tf.get_variable("weights", [INPUT_NODE, LAYER1_NODE],\
+					initializer=tf.truncated_normal_initializer(stddev=0.1))
+		biases = tf.get_variable("biases", [LAYER1_NODE],\
+					initializer=tf.constant_initializer(0.0))
+		# Use current parameters value to calculate layer1 output when no average class provided .
+		if avg_class == None:
+			layer1 = tf.nn.relu(tf.matmul(input_tensor, weights)+biases)
+		else:
+			layer1 = tf.nn.relu(tf.matmul(input_tensor,\
+						avg_class.average(weights))+avg_class.average(biases))
+
+	with tf.variable_scope('layer2', reuse=reuse):
+		weights = tf.get_variable('weights', [LAYER1_NODE, OUTPUT_NODE],\
+					initializer=tf.truncated_normal_initializer(stddev=0.1))
+		biases = tf.get_variable("biases", [OUTPUT_NODE],\
+					initializer=tf.constant_initializer(0.0))
+		
+		if avg_class == None:
+			layer2 = tf.nn.relu(tf.matmul(layer1, weights)+biases)
+		else:
+			layer2 = tf.nn.relu(tf.matmul(layer1,\
+						avg_class.average(weights))+avg_class.average(biases))
+	return layer2
+'''
+
 def interface(input_tensor, avg_class, weights1, biases1, weights2, biases2):
 	# Use current parameter value when no average class provided .
 	if avg_class == None:
@@ -89,13 +100,13 @@ def interface(input_tensor, avg_class, weights1, biases1, weights2, biases2):
 		layer1 = tf.nn.relu(tf.matmul(input_tensor, avg_class.average(weights1)) + avg_class.average(biases1))
 
 		return tf.matmul(layer1, avg_class.average(weights2)) + avg_class.average(biases2)
-'''
 
 # Training model .
 def train(mnist):
 	x = tf.placeholder(tf.float32, [None, INPUT_NODE], name='x-input')
 	y_ = tf.placeholder(tf.float32, [None, OUTPUT_NODE], name='y-input')
-
+	
+	
 	# Produce hidden layer parameters .
 	weights1 = tf.Variable(tf.truncated_normal([INPUT_NODE, LAYER1_NODE], stddev=0.1))
 	biases1 = tf.Variable(tf.constant(0.1, shape=[LAYER1_NODE]))
@@ -103,9 +114,14 @@ def train(mnist):
 	# Produce output layer parameters .
 	weights2 = tf.Variable(tf.truncated_normal([LAYER1_NODE, OUTPUT_NODE], stddev=0.1))
 	biases2 = tf.Variable(tf.constant(0.1, shape=[OUTPUT_NODE]))
+	
 
 	# Calculate forward propagation value with current parameters , when aver_class == None .
+	# Calculate forward propagation value with current parameters in namespace , create parameters
+	# the first time with reuse=AUTO_REUSE .
 	y = interface(x, None, weights1, biases1, weights2, biases2)
+	# y = interface(x, avg_class=None)
+	
 
 	# Define global_step , storing the training steps that will not be used to calculate
 	# MovingAverage , so allocated to be untrainable .
@@ -124,7 +140,10 @@ def train(mnist):
 	#
 	# For no change to variables' value and insteadly store them in shadow_varible ,
 	# so call average function tensorflow.train.ExponentialMovingAverage() explicitly .
+	# 
+	# Calls interface() function using namescope already created by setting reuse=True .
 	average_y = interface(x, variable_averages, weights1, biases1, weights2, biases2)
+	# average_y = interface(x, variable_averages, reuse=True)
 
 	# Calculate Cross-Entropy as the loss-function using 
 	# tensorflow.sparse_softmax_cross_entropy_with_logits() function 
@@ -205,7 +224,7 @@ def train(mnist):
 				# Calculate MovingAverage model's accuracy on test dataset every 1000 steps .
 				test_acc = sess.run(accuracy, feed_dict=test_feed)
 				print("After %d training steps, validation accuracy using average model is %g, \
-			test accuracy using average model is %g " %(i, validate_acc, test_acc))
+					test accuracy using average model is %g " %(i, validate_acc, test_acc))
 
 			# Produce a batch for this training step . 
 			xs, ys = mnist.train.next_batch(BATCH_SIZE)
@@ -219,7 +238,7 @@ def train(mnist):
 def main(argv = None):
 	
 	# Load MNIST datasets
-	mnist = input_data.read_data_sets(".", one_hot=True)
+	mnist = input_data.read_data_sets("./data", one_hot=True)
 	train(mnist)
 
 # main function entry tensorflow provided .
