@@ -34,7 +34,7 @@ def evaluate(mnist):
 
 		while True:
 			with tf.Session() as sess:
-				#
+				# Get latest model saved in ckpt file with checkpoint . 
 				ckpt = tf.train.get_checkpoint_state(mnist_train.MODEL_SAVE_PATH)
 				if ckpt and ckpt.model_checkpoint_path:
 					# Load model .
