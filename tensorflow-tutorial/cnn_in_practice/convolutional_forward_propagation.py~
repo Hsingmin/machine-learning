@@ -20,7 +20,7 @@ biases = tf.get_variable('biases', [16],\
 
 # Forward propagation with tensorflow.nn.conv2d() , 
 # input: current layer node matrix , [batch, length, width, depth] .
-# filter_weight: convolution weight , [filter_length, filter_width, current_layer_depth, filter_depth] .
+# filter_weight: convolution weight , [length, width, depth] .
 # strides: strides on different dimension , [1, stride_on_length, stride_on_width, 1] .
 # paddind: SAME -- zero_padding , VALID -- no_padding .
 conv = tf.nn.conv2d(input, filter_weight, strides=[1, 1, 1, 1], padding='SAME')
@@ -33,12 +33,6 @@ bias = tf.nn.bias_add(conv, biases)
 actived_conv = tf.nn.relu(bias)
 
 
-# Maximum pool forward propagation with tensorflow.nn.max_pool() ,
-# actived_conv: current conv-layer matrix , [batch, length, width, depth] .
-# ksize: pool filter size , [1, pool_length, pool_width, 1] .
-# strides: pool strides , [1, length_strides, width_strides, 1] .
-# padding: SAME -- zero_padding , VALID -- no zero_padding .
-pool = tf.nn.max_pool(actived_conv, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
 
