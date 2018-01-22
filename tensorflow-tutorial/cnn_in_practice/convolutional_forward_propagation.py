@@ -41,6 +41,20 @@ actived_conv = tf.nn.relu(bias)
 pool = tf.nn.max_pool(actived_conv, ksize=[1, 3, 3, 1], strides=[1, 2, 2, 1], padding='SAME')
 
 
+# Get a 4-dimension matrix as the input .
+#
+x = tf.placeholder(tf.float32,\
+		[BATCH_SIZE, mnist_inference.IMAGE_SIZE,\
+		mnist_inference.IMAGE_SIZE,\
+		mnist_inference.NUM_CHANNELS], name='x-input')
+y = tf.placeholder(tf.float32,)
+
+# Reshape training data to be a 4-dimension matrix .
+reshaped_xs = np.reshape(xs, (BATCH_SIZE,\
+			mnist_inference.IMAGE_SIZE,\
+			mnist_inference.IMAGE_SIZE,\
+			mnist_inference.NUM_CHANNELS))
+
 
 
 
