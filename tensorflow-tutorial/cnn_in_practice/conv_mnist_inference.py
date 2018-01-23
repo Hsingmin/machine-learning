@@ -1,6 +1,7 @@
 
 # conv_mnist_inferenct.py -- Define forward propagation progress and arguments of LeNet-5 .
 import tensorflow as tf
+import numpy as np
 
 # Neural Network Arguments .
 INPUT_NODE = 784
@@ -70,18 +71,18 @@ def inference(input_tensor, train, regularizer):
 				strides=[1, 2, 2, 1], padding='SAME')
 
 	
-	# Transform pool2 output 7*7*64 matrix into vector as input of full-connected layer5 
-	# using API get_shape() to get dimension rather than mannual computing . 
-	#
-	# Every layer of network inputs a batch of data , hence the dimension information
-	# here is for a batch . 
-	pool_shape = pool2.get_shape().as_list()
+		# Transform pool2 output 7*7*64 matrix into vector as input of full-connected layer5 
+		# using API get_shape() to get dimension rather than mannual computing . 
+		#
+		# Every layer of network inputs a batch of data , hence the dimension information
+		# here is for a batch . 
+		pool_shape = pool2.get_shape().as_list()
 	
-	# Calculating the length of transforming vector , and pool_shape[0] is the number of data in one batch .
-	nodes = pool_shape[1]*pool_shape[2]*pool_shape[3]
+		# Calculating the length of transforming vector , and pool_shape[0] is the number of data in one batch .
+		nodes = pool_shape[1]*pool_shape[2]*pool_shape[3]
 
-	# Reshape output of layer4 into a vector including one batch of data .
-	reshaped = tf.reshape(pool2, [pool_shape[0], nodes])
+		# Reshape output of layer4 into a vector including one batch of data .
+		reshaped = tf.reshape(pool2, [pool_shape[0], nodes])
 
 	# Declare full-connected layer5 and forward-propagation , 
 	# with a group of vectors (length=3136) input , and vector (length=512) output .
@@ -117,7 +118,6 @@ def inference(input_tensor, train, regularizer):
 
 	# Get output of full-connected layer6
 	return logit
-
 
 
 

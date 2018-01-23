@@ -83,7 +83,7 @@ def train(mnist):
 
 			# Save model every 1000 steps .
 			if i % 1000 == 0:
-				# Calculate current loss on training dataset .
+			# Calculate current loss on training dataset .
 				print("After %d training steps, loss on training batch is %g ." %(step, loss_value))
 
 				# Save current model .
