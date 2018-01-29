@@ -34,6 +34,10 @@ def _int64_feature(value):
 def _bytes_feature(value):
 	return tf.train.Feature(bytes_list=tf.train.BytesList(value=[value]))
 
+# Produce float type feature .
+def _float_feature(value):
+	return tf.train.Feature(float_list=tf.train.FloatList(value=[value]))
+
 mnist = input_data.read_data_sets("./data", dtype=tf.uint8, one_hot=True)
 # Image data .
 images = mnist.train.images
