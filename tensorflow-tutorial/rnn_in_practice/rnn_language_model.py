@@ -37,7 +37,7 @@ class PTBModel(object):
 		self.input_data = tf.placeholder(tf.int32, [batch_size, num_steps])
 
 		# Define expected output with size equals to real label output by ptb_iterator.
-		self.targets = tf.placeholder(tf.float32, [batch_size, num_steps])
+		self.targets = tf.placeholder(tf.int32, [batch_size, num_steps])
 
 		# Set LSTM to be loop structure of deepRNN and using dropout .
 		# Set state_is_tuple=True , returns (c, h) or it would be concated into a tensor .
@@ -55,6 +55,7 @@ class PTBModel(object):
 		# Words counts totally to VOCAB_SIZE in dictionary ,
 		# word vector dimension=HIDDEN_SIZE , then variable embedding
 		# dimension=VOCAB_SIZE * HIDDEN_SIZE .
+		
 		embedding = tf.get_variable("embedding", [VOCAB_SIZE, HIDDEN_SIZE])
 
 		# Converse original batch_size*num_steps words' id into word vector.
@@ -70,19 +71,25 @@ class PTBModel(object):
 		outputs = []
 		# Strore LSTM state information of different batch , and initialize to zeros .
 		state = self.initial_state
-		with tf.variable_scope("RNN"):
-			for time_step > 0:
-				tf.get_variable_scope().resuse_variables()
+		
+		with tf.variable_scope("RNN", reuse=tf.AUTO_REUSE):
+			for time_step in range(num_steps):
+				if time_step > 0:
+					tf.get_variable_scope().reuse_variables()
 				# Input training data reshaped in embedding following sequence .
 				cell_output, state = cell(inputs[:, time_step, :], state)
 
 				outputs.append(cell_output)
 		# Reshape output into input matrix dimension .
-		output = tf.reshape(tf.concat(1, outputs), [-1, HIDDEN_SIZE])
+		#
+		# In tensorflow 1.0 or higher version , change tf.concat(1, outputs)
+		# to tf.concat(outputs, 1) .
+		output = tf.reshape(tf.concat(outputs, 1), [-1, HIDDEN_SIZE])
 		
 		# Final full-connected layer to get the predication value ,
 		# that is an array length=VOCAB_SIZE , which turned to be a
 		# probability vector through softmax layer .
+
 		weight = tf.get_variable("weight", [HIDDEN_SIZE, VOCAB_SIZE])
 		bias = tf.get_variable("bias", [VOCAB_SIZE])
 		logits = tf.matmul(output, weight) + bias
@@ -90,7 +97,10 @@ class PTBModel(object):
 		# Cross Entropy loss function ,
 		# Tensorflow provides sequence_loss_by_example api to calculate 
 		# the cross-entropy of one sequence .
-		loss = tf.nn.seq2seq.sequence_loss_by_example(
+		#
+		# In tensorflow 1.0 or higher version , tf.nn.seq2seq.sequence_loss_by_example
+		# is romoved and use tf.contrib.legacy_seq2seq.sequence_loss_by_example() instead .
+		loss = tf.contrib.legacy_seq2seq.sequence_loss_by_example(
 				[logits],				# Predication value
 				[tf.reshape(self.targets, [-1])],	# Expected result 
 									# reshape [batch_size, num_steps] 
@@ -116,19 +126,77 @@ class PTBModel(object):
 		self.train_op = optimizer.apply_gradients(zip(grads, trainable_variables))
 
 # Batch all text contents for model to train .
-def run_epoch():
+# Return perplexity value on whole dataset by running train_op .
+def run_epoch(session, model, data, train_op, output_log):
+	# Auxiliary variables to calculate perplexity .
+	total_costs = 0.0
+	iters = 0
+	state = session.run(model.initial_state)
+	count = 0
+	# Train or test model with current dataset .
+	for step, (x, y) in enumerate(
+			reader.ptb_iterator(data, model.batch_size, model.num_steps)):
+		# Run train_op on current batch and calculate cross-entropy that means
+		# the probability of next word been specified .
+		cost, state, _ = session.run([model.cost, model.final_state, train_op],
+				{model.input_data: x, model.targets: y, model.initial_state: state})
 
+		# Add probability of all batched in all moments to get perplexity .
+		total_costs += cost
+		iters += model.num_steps
+		count += 1
+		# Output log when training .
+		if output_log and count % 100 == 1:
+			print("After %d steps, perplexity is %.3f " %(
+				count, np.exp(total_costs / iters)))
+
+	# Return perplexity on training dataset .
+	return np.exp(total_costs / iters)
 
 # Calls run_epoch() for many times ,
 # contents in text will be feeded to model for many times ,
 # in which progress the arguments adjusted . 
 def main(argv=None):
+	# Get raw training dataset .
+	train_data, validate_data, test_data, _ = reader.ptb_raw_data(DATA_PATH) 
+	
+	# Define initializer for model .
+	initializer = tf.random_uniform_initializer(-0.05, 0.05)
+	
+	# Define deepRNN model for training .
+	with tf.variable_scope("language_model", 
+			reuse=tf.AUTO_REUSE, initializer=initializer):
+		train_model = PTBModel(True, TRAIN_BATCH_SIZE, TRAIN_NUM_STEP)
 
+	# Define deepRNN model for testing .
+	with tf.variable_scope("language_model", 
+			reuse=tf.AUTO_REUSE, initializer=initializer):
+		eval_model = PTBModel(False, EVAL_BATCH_SIZE, EVAL_NUM_STEP)
+	
+	with tf.Session() as session:
+		session.run((tf.global_variables_initializer(),
+			  tf.local_variables_initializer()))
 
+		# Train model with training datasets
+		for i in range(NUM_EPOCH):
+			print("In iteration: %d " % (i + 1))
+			# Train deepRNN model on whole dataset .
+			run_epoch(session, train_model, 
+					train_data, train_model.train_op, True)
+			
+			# Validate model with validate dataset .
+			validate_perplexity = run_epoch(session, eval_model,
+					validate_data, tf.no_op(), False)
+			print("Epoch: %d Validation Perplexity %.3f" % 
+					(i + 1, validate_perplexity))
 
+		
+		# Evaluate model performance on test dataset .
+		test_perplexity = run_epoch(session, eval_model, test_data, tf.no_op(), False)
+		print("Test: Perplexity: %.3f " % test_perplexity)
 
-
-
+if __name__ == "__main__":
+	tf.app.run()
 
 
 
