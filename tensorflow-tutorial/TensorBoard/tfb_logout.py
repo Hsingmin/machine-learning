@@ -4,7 +4,7 @@
 import tensorflow as tf
 
 # A simple Compute Graph of add operation .
-
+'''
 with tf.name_scope("input1"):
 	input1 = tf.constant([1.0, 2.0, 3.0], name="input1")
 
@@ -17,9 +17,9 @@ output = tf.add_n([input1, input2], name="add")
 # add current compute graph into log .
 writer = tf.summary.FileWriter("./to/log", tf.get_default_graph())
 writer.close()
-
-
 '''
+
+
 with tf.variable_scope("foo"):
 	# Get variable "foo/bar" in variable scope "foo" .
 	a = tf.get_variable("bar", [1])
@@ -30,6 +30,8 @@ with tf.variable_scope("bar"):
 	# variable "bar/bar" would not conflict with "foo/bar" .
 	b = tf.get_variable("bar", [1])
 	print(b.name)				# print bar/bar:0
+	v = tf.Variable([1])
+	print(v.name)
 
 with tf.name_scope("a"):
 	# It would get variable "a/Variable" with tf.Variable() .
@@ -53,7 +55,7 @@ with tf.name_scope("b"):
 	b = tf.get_variable("b", [1])
 	print(b.name)
 
-'''
+
 
 
 
