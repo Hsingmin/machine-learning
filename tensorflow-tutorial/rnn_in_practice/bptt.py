@@ -34,6 +34,10 @@ class SIMPLE_RNN:
 
 		return np.array(output)
 
+#
+class BPTT_RNN:
+
+
 def main(argv=None):
 	n_sample = 5
 	# U as unit matrix 
