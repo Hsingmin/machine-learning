@@ -1,4 +1,14 @@
 
+# -*- coding: utf-8 -*-
+# -*- version:
+#		python 3.5.3
+#		tensorflow 1.4.0 
+#		numpy 1.13.1
+# 
+# Raw version from Tensorflow battle in Google Framework 
+# modified by Hsingmin Lee to update new features and debug
+# the Model to runnable .
+
 # rnn_language_model.py -- Achieve a 
 # natrual language processing model with deepRNN and LSTM .
 
@@ -58,8 +68,12 @@ class PTBModel(object):
 		
 		embedding = tf.get_variable("embedding", [VOCAB_SIZE, HIDDEN_SIZE])
 
-		# Converse original batch_size*num_steps words' id into word vector.
-		# word vector dimension=batch_size*num_steps*HIDDEN_SIZE .
+		# Converse original batch_size x num_steps words' id into word vector.
+		# word vector dimension = batch_size x num_steps x HIDDEN_SIZE ,
+		# in which batch_size as the first dimenion ,
+		# num_steps as the second dimension,
+		# HIDDEN_SIZE as the third dimension .
+		# Get a 3-D word matrix .
 		inputs = tf.nn.embedding_lookup(embedding, self.input_data)
 
 		# Use dropout only in training process .

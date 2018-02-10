@@ -53,6 +53,8 @@ class BPTT_RNN(SIMPLE_RNN):
 		dis = o - y
 		# dv = (o - y) * state .
 		dv = dis.T.dot(self.state[:-1])
+		
+		# Initialize du and dw to zeros vector .
 		du = np.zeros_like(self.u)
 		dw = np.zeros_like(self.w)
 
