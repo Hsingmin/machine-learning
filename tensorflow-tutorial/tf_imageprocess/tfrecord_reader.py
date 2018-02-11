@@ -1,4 +1,10 @@
 
+# -*- coding: utf-8 -*-
+# -*- version:
+#		python 3.5.2
+#		Tensorflow 1.4.0
+# -*- -------------------------------- -*-
+# 
 # tfrecord_reader.py -- Read data from TFRecord file .
 import tensorflow as tf
 
@@ -18,7 +24,7 @@ _, serialized_example = reader.read(filename_queue)
 # Tensorflow provides two methods to parse TFRecord file features field :
 # 	tf.FixedLenFeature() to get Tensor as result .
 #	tf.VarLenFeature() to get SparseTensor processing sparse data . 
-features = tf.parse_single_example(serialized_example,\
+features = tf.parse_single_example(serialized_example,
 		features={'image_raw': tf.FixedLenFeature([], tf.string),
 			  'pixels': tf.FixedLenFeature([], tf.int64),
 			  'labels': tf.FixedLenFeature([], tf.int64)})

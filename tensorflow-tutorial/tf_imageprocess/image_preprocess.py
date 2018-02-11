@@ -55,7 +55,7 @@ def preprocess_for_train(image, height, width, bbox):
 			[height, width], method=np.random.randint(4))
 	
 	# Distort image randomly to reduce affect to model of noise .
-	bbox_begin, bbox_size, draw_bbox  = tf.image.sample_distorted_bounding_box(tf.shape(image), \
+	bbox_begin, bbox_size, draw_bbox  = tf.image.sample_distorted_bounding_box(tf.shape(image), 
 			bounding_boxes=bbox, min_object_covered=0.1)
 
 	# Convert image tensor data type .

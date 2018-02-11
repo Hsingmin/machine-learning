@@ -1,4 +1,10 @@
 
+# -*- coding: utf-8 -*-
+# -*- version:
+#		python 3.5.2
+#		tensorflow 1.4.0
+# -*- ----------------------------------- -*-
+#
 # input_files_queue.py
 
 import tensorflow as tf
@@ -22,9 +28,9 @@ filename_queue = tf.train.string_input_producer(files, shuffle=False)
 # Read and parse an example .
 reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)
-features = tf.parse_single_example(\
-		serialized_example,\
-		features={\
+features = tf.parse_single_example,
+		serialized_example,
+		features={
 		'i': tf.FixedLenFeature([], tf.int64),
 		'j': tf.FixedLenFeature([], tf.int64)})
 

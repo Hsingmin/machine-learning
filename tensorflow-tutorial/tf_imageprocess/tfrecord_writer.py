@@ -1,4 +1,10 @@
 
+# -*- coding: utf-8 -*-
+# -*- version:
+#	python 3.5.2
+#	Tensorflow 1.4.0
+#	numpy 1.13.1
+# -*- ----------------------------------------- -*-
 # tfrecord_writer.py -- Tensorflow provides TFRecord file to store
 # different type of data .
 # 
@@ -63,7 +69,7 @@ for index in range(num_examples):
 	# Converse image matrix into a string .
 	image_raw = images[index].tostring()
 	# Converse one sample into Example Protocol Buffer and fill with all information .
-	example = tf.train.Example(features=tf.train.Features(feature={\
+	example = tf.train.Example(features=tf.train.Features(feature={
 			'pixels': _int64_feature(pixels),
 			'labels': _int64_feature(np.argmax(labels[index])),
 			'image_raw': _bytes_feature(image_raw)}))

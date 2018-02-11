@@ -1,4 +1,10 @@
 
+# -*- coding: utf-8 -*-
+# -*- version:
+#		python 3.5.2
+#		tensorflow 1.4.0
+# -*- ------------------------------------ -*-
+#
 # inputdata_process_framework.py 
 
 import tensorflow as tf
@@ -12,13 +18,13 @@ filename_queue = tf.train.string_input_producer(filenames, shuffle=False)
 # Get and parse image data from specified TFRecord files in queue .
 reader = tf.TFRecordReader()
 _, serialized_example = reader.read(filename_queue)
-features = tf.parse_single_example(\
-		serialized_example, \
-		features={\
-		'image': tf.FixedLenFeature([], tf.string),\
-		'label': tf.FixedLenFeature([], tf.int64),\
-		'height': tf.FixedLenFeature([], tf.int64),\
-		'width': tf.FixedLenFeature([], tf.int64),\
+features = tf.parse_single_example(
+		serialized_example,
+		features={
+		'image': tf.FixedLenFeature([], tf.string),
+		'label': tf.FixedLenFeature([], tf.int64),
+		'height': tf.FixedLenFeature([], tf.int64),
+		'width': tf.FixedLenFeature([], tf.int64),
 		'channels': tf.FixedLenFeature([], tf.int64)})
 
 image, label = features['image'], features['label']
@@ -38,8 +44,8 @@ distorted_image = image_process.preprocess_for_train(decoded_image, image_size, 
 min_after_dequeue = 10000
 batch_size = 100
 capacity = min_after_dequeue + 3 * batch_size
-image_batch, label_batch = tf.train.shuffle_batch(\
-		[distorted_image, label], batch_size=batch_size,\
+image_batch, label_batch = tf.train.shuffle_batch(
+		[distorted_image, label], batch_size=batch_size,
 		capacity=capacity, min_after_dequeue=min_after_dequeue)
 
 # Define network structure and optimization process ,
@@ -51,7 +57,7 @@ train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss)
 #
 with tf.Session() as sess:
 	# Variables initilaization and threads start .
-	init = (tf.global_variables_initializer(),\
+	init = (tf.global_variables_initializer(),
 		tf.local_variables_initializer())
 	sess.run(init)
 

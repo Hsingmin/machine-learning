@@ -1,5 +1,13 @@
 
-# tflearn_sin_predict.py -- Create model to predict sin() function with TFLearn .
+# -*- coding: utf-8 -*-
+# -*- version:
+#		python 3.5.3
+#		tensorflow 1.4.0
+# 		numpy 1.13.1
+# -*- ------------------------------------------- -*-
+#
+# tflearn_sin_predict.py 
+# 	-- Create model to predict sin() function with TFLearn .
 
 import numpy as np
 import tensorflow as tf
@@ -58,13 +66,13 @@ def lstm_model(X, y):
 
 	# Creatd model optimizer and train_op .
 	train_op = tf.contrib.layers.optimize_loss(
-			loss, tf,contrib.framework.get_global_step(),
+			loss, tf.contrib.framework.get_global_step(),
 			optimizer="Adagrad", learning_rate=0.1)
 
 	return prediction, loss, train_op
 
 # Create deepRNN model .
-regressor = learn.Estimator(model.fn=lstm_model)
+regressor = learn.Estimator(model_fn=lstm_model)
 
 # Produce training dataset and test dataset with sin() function .
 #

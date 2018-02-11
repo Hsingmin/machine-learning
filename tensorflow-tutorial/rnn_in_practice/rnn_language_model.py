@@ -4,7 +4,8 @@
 #		python 3.5.3
 #		tensorflow 1.4.0 
 #		numpy 1.13.1
-# 
+# -*- ---------------------------------- -*-  
+#
 # Raw version from Tensorflow battle in Google Framework 
 # modified by Hsingmin Lee to update new features and debug
 # the Model to runnable .
