@@ -72,7 +72,6 @@ def create_image_lists(testing_percentage, validation_percentage):
 	#           './data/flower_photos/sunflowers',
 	#           './data/flower_photos/tulips']
 	
-	# The first element in list is root directory .
 	is_root_dir = True
 	for sub_dir in sub_dirs:
 		if is_root_dir:
