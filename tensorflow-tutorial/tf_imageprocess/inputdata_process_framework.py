@@ -8,7 +8,7 @@
 # inputdata_process_framework.py 
 
 import tensorflow as tf
-import image_process
+import image_preprocess
 
 # Create file list and file queue .
 # Before that , store training data into TFRecord file with unified format .
@@ -38,7 +38,7 @@ decoded_image.set_shape([height, width, channels])
 # Set input image size .
 image_size = 299
 # Preprocess images with 
-distorted_image = image_process.preprocess_for_train(decoded_image, image_size, None)
+distorted_image = image_preprocess.preprocess_for_train(decoded_image, image_size, None)
 
 #
 min_after_dequeue = 10000
