@@ -69,7 +69,7 @@ class PTBModel(object):
 		
 		embedding = tf.get_variable("embedding", [VOCAB_SIZE, HIDDEN_SIZE])
 
-		# Converse original batch_size x num_steps words' id into word vector.
+		# Converse original batch_size * num_steps words' id into word vector.
 		# word vector dimension = batch_size x num_steps x HIDDEN_SIZE ,
 		# in which batch_size as the first dimenion ,
 		# num_steps as the second dimension,
@@ -84,7 +84,7 @@ class PTBModel(object):
 		# Define outputs array to collect LSTM output in different moment ,
 		# and get the final output through a full-connected network .
 		outputs = []
-		# Strore LSTM state information of different batch , and initialize to zeros .
+		# Store LSTM state information of different batch , and initialize to zeros .
 		state = self.initial_state
 		
 		with tf.variable_scope("RNN", reuse=tf.AUTO_REUSE):
