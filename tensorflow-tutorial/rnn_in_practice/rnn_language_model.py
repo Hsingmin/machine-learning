@@ -61,7 +61,8 @@ class PTBModel(object):
 
 		# Initialize original state to zeros vector .
 		self.initial_state = cell.zero_state(batch_size, tf.float32)
-		# Converse word id to word vector .
+		# Embedding Layer is a full-connected layer 
+		# to converse word id to word vector .
 		#
 		# Words counts totally to VOCAB_SIZE in dictionary ,
 		# word vector dimension=HIDDEN_SIZE , then variable embedding
