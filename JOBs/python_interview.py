@@ -93,9 +93,9 @@ def test_find_element(arg = None):
 	print(find_element(l, x1), find_element(l, x2), find_element(l, x3))
 
 class ListNode(object):
-	def __init__(self, x):
-		self.val = x
-		self.next = None
+	def __init__(self, data=None, next=None):
+		self.val = data
+		self.next = next
 class LinkList(object):
 	def __init__(self):
 		self.head = 0
@@ -215,10 +215,171 @@ def quick_sort(list):
 	if len(list)<2:
 		return list
 	else:
+		mid_pivot = list[0]
+		smaller_list = [e for e in list[1:] if e <= mid_pivot]
+		bigger_list = [e for e in list[1:] if e > mid_pivot]
+		final_list = quick_sort(smaller_list) + [mid_pivot]\
+			+ quick_sort(bigger_list)
+		return final_list
 
+def test_quick_sort(arg=None):
+	list = [2,4,6,7,1,2,5]
+	print(quick_sort(list))
+
+# BiTree
+class BTNode(object):
+	def __init__(self, data, left=None, right=None):
+		self.data = data
+		self.left = left
+		self.right = right
+
+def bitree_level_traverse(root):
+	if not root:
+		return
+	row = [root]
+	while row:
+		print([node.data for node in row])
+		row = [kid for item in row for kid in (item.left, item.right) if kid]
+
+def bitree_pre_traverse(root):
+	if not root:
+		return
+	print(root.data)
+	bitree_pre_traverse(root.left)
+	bitree_pre_traverse(root.right)
+
+def bitree_mid_traverse(root):
+	if root == None:
+		return
+	if root.left is not None:
+		bitree_mid_traverse(root.left)
+	print(root.data)
+	if root.right is not None:
+		bitree_mid_traverse(root.right)
+
+def bitree_post_traverse(root):
+	if root == None:
+		return
+	if root.left is not None:
+		bitree_post_traverse(root.left)
+	if root.right is not None:
+		bitree_post_traverse(root.right)
+	print(root.data)
+
+def bitree_get_deepth(root):
+	if not root:
+		return 0
+	return max(bitree_get_deepth(root.left), bitree_get_deepth(root.right))+1
+
+def bitree_is_same(p, q):
+	if None == p and None == q:
+		return True
+	elif p and q:
+		return p.data == q.data and bitree_is_same(p.left, q.left) \
+				and bitree_is_same(p.right, q.right)
+	else:
+		return False
+
+def bitree_rebuild(pre_order, mid_order):
+	if not pre_order:
+		return
+	current_node = pre_order[0]	# root
+	index = mid_order.index(pre_order[0])
+	current_node.left = rebuild(pre_order[1:index+1], mid_order[:index])
+	current_node.right = rebuild(pre_order[index+1:], mid_order[index+1:])
+	return current_node
+
+def test_bitree(arg=None):
+	tree = BTNode(1, BTNode(3, BTNode(7, BTNode(0)), BTNode(6)), BTNode(2, BTNode(5), BTNode(4)))
+	print('Level Traverse BiTree : ')
+	bitree_level_traverse(tree)
+	print('Pre-Order Traverse BiTree : ')
+	bitree_pre_traverse(tree)
+	print('Mid-Order Traverse BiTree : ')
+	bitree_mid_traverse(tree)
+	print('Post-Order Traverse BiTree : ')
+	bitree_post_traverse(tree)
+	print('Deepth of tree is : %d' %bitree_get_deepth(tree))
+
+	another_tree = BTNode(1, BTNode(3, BTNode(7, BTNode(1)), BTNode(6)), BTNode(2, BTNode(5), BTNode(4)))
+	print('tree and another_tree is the same : ', bitree_is_same(tree, another_tree))
+
+def reverse_linklist(link):
+	pre = link
+	cur = link.next
+	pre.next = None
+	while cur:
+		tmp = cur.next
+		cur.next = pre
+		pre = cur
+		cur = tmp
+	return pre
+
+def test_reverse_linklist(arg=None):
+	link = ListNode(1, ListNode(2, ListNode(3, ListNode(4, ListNode(5, ListNode(6, ListNode(7, ListNode(8, ListNode(9)))))))))
+	root = reverse_linklist(link)
+	while root:
+		print(root.val)
+		root = root.next
+
+def check_change_word(s1, s2):
+	alist1 = list(s1)
+	alist2 = list(s2)
+
+	alist1.sort()
+	alist2.sort()
+
+	pos = 0
+	matches = True
+
+	while pos < len(s1) and matches:
+		if alist1[pos] == alist2[pos]:
+			pos += 1
+		else:
+			matches = False
+	return matches
+
+def test_check_change_word(arg=None):
+	s1 = 'list'
+	s2 = 'still'
+	print('list and still is change word : ', check_change_word(s1, s2))
+
+	s1 = 'stop'
+	s2 = 'post'
+	print('stop and post is change word : ', check_change_word(s1, s2))
+
+# Level Order Traverse a Directory
+import os
+
+def traverse_directory(path):
+	sub_path_list = []
+	file_path_list = []
+	for rootdir, subdirs, filenames in os.walk(path):
+		for subdir in subdirs:
+			sub_path_list.append(os.path.join(rootdir, subdir))
+
+		for filename in filenames:
+			file_path_list.append(os.path.join(rootdir, filename))
+	return sub_path_list, file_path_list
+
+def test_traverse_directory(arg=None):
+	path = './sub_pack'
+	sub_directories, files = traverse_directory(path)
+	print('sub directory list is : ', sub_directories)
+	print('file list is : ', files)
+
+def get_median(list):
+	list = sorted(list)
+	length = len(list)
+	return list[int(length/2)]
+
+def test_get_median(arg=None):
+	list = [1,5,6,3,6,9,5]
+	m = get_median(list)
+	print(m)
 
 if __name__ == '__main__':
-	test_binary_search(arg = None)
+	test_get_median(arg=None)
 
 
 
