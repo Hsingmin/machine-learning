@@ -3,10 +3,13 @@
 import time
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
+import numpy as np
 
 # Load variables and functions defined in mnist_inference.py and mnist_train.py
 import mnist_inference
 import mnist_train
+
+from tensorflow.python.framework import graph_util 
 
 # Load latest model to get the accuracy on testing dataset .
 EVAL_INTERVAL_SECS = 10
@@ -44,11 +47,24 @@ def evaluate(mnist):
 
 					accuracy_score = sess.run(accuracy, feed_dict=validate_feed)
 					print("After %s training steps, validation accuracy=%g " %(global_step, accuracy_score))
+
+				#	saver.export_meta_graph("./model/model.ckpt.meta.json", as_text=True)
+				'''
+				new_saver = tf.train.import_meta_graph('./model/model.ckpt-28001.meta')
+				for var in tf.trainable_variables():
+					print(var.name)
+					new_saver.restore(sess, ckpt.model_checkpoint_path)
+					all_vars = tf.trainable_variables()
+					for v in all_vars:
+						v_4d = np.array(sess.run(v))
+						print(v_4d)
+				'''
 				else:
 					print("No checkpoint file found .")
 					return
 			time.sleep(EVAL_INTERVAL_SECS)
 
+				
 def main(argv=None):
 	mnist = input_data.read_data_sets("./data/", one_hot=True)
 	evaluate(mnist)

@@ -42,8 +42,21 @@ def inference(input_tensor, regularizer):
 
 	return layer2
 
+def get_model_parameters(layer):
+	with tf.variable_scope(layer, reuse=tf.AUTO_REUSE):
+		if layer == 'layer1':
+			weights = get_weight_variable([INPUT_NODE, LAYER1_NODE], None)
+			biases = tf.get_variable("biases", [LAYER1_NODE], 
+					initializer=tf.constant_initializer(0.0))
+		elif layer == 'layer2':
+			weights = get_weight_variable([LAYER1_NODE, OUTPUT_NODE], None)
+			biases = tf.get_variable("biases", [OUTPUT_NODE],
+					initializer=tf.constant_initializer(0.0))
+		else:
+			weights = tf.constant(0.0)
+			biases = tf.constant(0.0)
 
-
+	return weights, biases
 
 
 

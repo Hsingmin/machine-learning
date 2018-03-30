@@ -7,18 +7,20 @@ from tensorflow.examples.tutorials.mnist import input_data
 
 # Load constants and forward propagation function in mnist_inference.py
 import mnist_inference
+import csv
 
 # Network Arguments
 BATCH_SIZE = 100
 LEARNING_RATE_BASE = 0.8
 LEARNING_RATE_DECAY = 0.99
 REGULARIZATION_RATE = 0.0001
-TRAINING_STEPS = 30000
+TRAINING_STEPS = 3000		# MARK
 MOVING_AVERAGE_DECAY = 0.99
 
 # Model saved path .
 MODEL_SAVE_PATH = './model/'
 MODEL_NAME = "model.ckpt"
+CSV_NAME = "parameter.csv"
 
 def train(mnist):
 	# Define inputs placeholder .
@@ -58,6 +60,11 @@ def train(mnist):
 	# Initialize persistence class .
 	saver = tf.train.Saver()
 	
+	#layer1_weights, layer1_biases = mnist_inference.get_model_parameters('layer1')
+	#layer2_weights, layer2_biases = mnist_inference.get_model_parameters('layer2')
+	
+	#csv_out = open(os.path.join(MODEL_SAVE_PATH, CSV_NAME), 'w', newline='')
+	#csv_writer = csv.writer(csv_out, dialect='excel')
 	with tf.Session() as sess:
 		tf.global_variables_initializer().run()
 
@@ -74,6 +81,11 @@ def train(mnist):
 
 				# Save current model .
 				saver.save(sess, os.path.join(MODEL_SAVE_PATH, MODEL_NAME), global_step=global_step)
+
+		#l1_weights, l1_biases = sess.run([layer1_weights, layer1_biases])
+		#csv_writer.writerow(l1_weights)
+		#csv_writer.writerow(l1_biases)
+		
 def main(argv=None):
 	mnist = input_data.read_data_sets("./data/", one_hot=True)
 	train(mnist)
