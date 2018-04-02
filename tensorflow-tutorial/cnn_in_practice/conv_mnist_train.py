@@ -31,7 +31,6 @@ def train(mnist):
 					name='x-input')
 	y_ = tf.placeholder(tf.float32, [BATCH_SIZE, conv_mnist_inference.OUTPUT_NODE], name='y-input')
 
-
 	# Regularizer defination .
 	regularizer = tf.contrib.layers.l2_regularizer(REGULARIZATION_RATE)
 	
