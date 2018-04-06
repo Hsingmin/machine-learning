@@ -67,23 +67,24 @@ with tf.Session() as sess:
 
 	# Bounding boxes relative position
 	# bounding_boxes [y_min, x_min, y_max, x_max]
-	boxes = tf.constant([[[0.05, 0.5, 0.9, 0.9], [0.35, 0.47, 0.5, 0.56]]])
+	boxes = tf.constant([[[0.05, 0.05, 0.9, 0.7]]])
 	# result = tf.image.draw_bounding_boxes(batched, boxes)
 	
 	# ValueError: Tried to convert 'min_object_covered' to a tensor and failed .
 	# Error: None values not supported .
 	# 
 	# Argument min_object_covered needed to be explicitly specified .
-	begin, size, bbox_for_draw = tf.image.sample_distorted_bounding_box(\
-			tf.shape(img_data), bounding_boxes=boxes, min_object_covered=0.1)
+	# begin, size, bbox_for_draw = tf.image.sample_distorted_bounding_box(\
+	# 		tf.shape(img_data), bounding_boxes=boxes, min_object_covered=0.1)
 	batched = tf.expand_dims(tf.image.convert_image_dtype(img_data, tf.float32), 0)
-	image_with_box = tf.image.draw_bounding_boxes(batched, bbox_for_draw)
+	image_with_box = tf.image.draw_bounding_boxes(batched, boxes)
 	
 	# reshaped = tf.reshape(result, [180, 267, 3])
 	# reshaped = tf.reshape(image_with_box, [180, 267, 3])
 	reshaped = tf.reshape(image_with_box, [180, 267, 3])
 	
-	reshaped = tf.slice(reshaped, begin, size)
+	reshaped = tf.slice(reshaped, [int(0.05*180), int(0.05*267),0], [int(0.85*180), int(0.65*267), -1])
+	convert_write_image(reshaped, "./to/sliced.jpg")
 
 	plt.imshow(reshaped.eval())
 	plt.show()

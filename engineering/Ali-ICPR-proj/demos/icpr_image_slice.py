@@ -33,53 +33,12 @@ VALIDATE_SLICES_DIR = 'd:/engineering-data/Ali-ICPR-data/validate_slice'
 # Preprocess image with given bounding-box as arguments, and get image slices .
 #
 # Preprocess image steps :
-# 	tf.image.decode_jpeg()
-#	tf.image.resize_images()
-# 	tf.sample_distorted_bounding_box()
-#	tf.image.convert_image_dtype()
-#	tf.expand_dims()
-#	tf.image.draw_bounding_boxes()
-#	tf.reshape()
-#	tf.slice()
-def get_image_slice(image, bbox):
-	# Regard whole image as the attention part if bbox is none .
-	if bbox is None:
-		bbox = tf.constant([0.0, 0.0, 1.0, 1.0], dtype=tf.float32, shape=[1,1,4])
-		
-	
-	# Distort image randomly to reduce affect to model of noise .
-	bbox_begin, bbox_size, draw_bbox  = tf.image.sample_distorted_bounding_box(tf.shape(image), 
-			bounding_boxes=bbox, min_object_covered=0.1)
-
-	# Convert image tensor data type .
-	#
-	# Image data type from uint8 to tf.float32 .
-	# Expand dimensions from 3-D to 4-D .
-	
-	if image.dtype != tf.float32:
-		image = tf.image.convert_image_dtype(image, dtype=tf.float32)	
-	
-	image = tf.expand_dims(image, 0)
-	
-	# tf.image.draw_bounding_boxes(arg1=image, arg2=draw_box)
-	#
-	# image : dimendion expanded 
-	# draw_box : the 3rd result returned by tf.image.sample_distorted_bounding_box()
-	distorted_image = tf.image.draw_bounding_boxes(image, draw_bbox)	
-	
-	distorted_image = tf.reshape(distorted_image, [height, width, 3])
-	
-	distorted_image = tf.slice(distorted_image, bbox_begin, bbox_size)
-	
-	distorted_image = tf.image.random_flip_left_right(distorted_image)
-	distorted_image = distort_color(distorted_image, np.random.randint(5))
-
-	return distorted_image
+# 	create_images_list()
+#	get_single_image_slice()
+# 	get_single_image_bboxes()
 
 # Create image list.
-def create_image_list(sess):
-	image_dir = os.path.join(TRAIN_IMAGE_DIR, "T1F4yjFrVdXXXXXXXX_!!0-item_pic.jpg.jpg")
-	bbox_dir = os.path.join(TRAIN_BBOX_DIR, "T1F4yjFrVdXXXXXXXX_!!0-item_pic.jpg.txt")
+def get_single_image_bboxes(sess, image_dir, bbox_dir):
 	image_raw_data = tf.gfile.FastGFile(image_dir, "r").read()
 	image_data = tf.image.decode_jpeg(image_raw_data)
 	bbox_list = []
@@ -90,16 +49,47 @@ def create_image_list(sess):
 			txt_list.append(box[-1])
 			bbox_list.append(box[:-1])
 
+	'''
 	sized_image = np.asarray(image_data.eval(session=sess), dtype='uint8')
 	height = len(sized_image)
 	width = len(sized_image[0])
-	
+	'''
+
 	# convert bbox into relative position .
+	bboxes = []
 	for bbox in bbox_list:
-		bbox = [int(b/(int))]
+		bboxes.append([int(bbox[1]), int(bbox[0]), 
+			int(bbox[5]), int(bbox[4])])
 	
+	return bboxes, txt_list
+
+def get_single_image_slice(box, image, path):
+	sliced_image = tf.slice(image, [box[0], box[1], 0], [box[2]-box[0], box[3]-box[1], -1])
+	reshaped_image = tf.reshape(sliced_image, [300, 300, 3])
+	
+	uint8_image = tf.image.convert_image_dtype(reshaped_image, dtype=tf.uint8)
+	encoded_image = tf.image.encode_jpeg(uint8_image)
+	with tf.gfile.GFile(path, "wb") as f:
+		f.write(encoded_image.eval())
+
+	return reshaped_image
+
+def creat_images_list():
+	image_dirs = []
+	bbox_dirs = []
+
+	image_dir = os.path.join(TRAIN_IMAGE_DIR, "T1F4yjFrVdXXXXXXXX_!!0-item_pic.jpg.jpg")
+	bbox_dir = os.path.join(TRAIN_BBOX_DIR, "T1F4yjFrVdXXXXXXXX_!!0-item_pic.jpg.txt")
+	image_dirs.append(image_dir)
+	bbox_dirs.append(bbox_dir)
+
+	return image_dirs, bbox_dirs
+
 def main(argv=None):
 	# Get 
+
+	with tf.Session() as sess:
+
 
 
 
