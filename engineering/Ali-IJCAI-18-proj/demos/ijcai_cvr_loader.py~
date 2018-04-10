@@ -97,12 +97,64 @@ def raw_convert_csv(dataset):
 	cols = [x for x in range(19, 27)]
 	pd.read_csv(dataset_raw, sep=' ', usecols=cols).to_csv(
 			os.path.join(DATASET_DIR, "train_shop.csv"))
-	'''
 
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_trade.csv"))
 	
 	df.loc['trade_sums'] = df.apply(lambda x: x.sum())
-	print(df.loc['trade_sums'])
+	slices = [df.loc['trade_sums']['is_trade'], len(df)]
+	activities = ['is_trade=1', 'is_trade=0']
+	colors = ['g', 'r']
+	plt.pie(slices, labels=activities,
+		colors=colors, startangle=90,
+		shadow=True, explode=(0.1, 0),
+		autopct='%1.1f%%')
+	plt.title('is_trade distribution')
+	plt.show()
+	'''
+	df = pd.read_csv(os.path.join(DATASET_DIR, "train_item.csv"))
+	item_dict = {}
+	
+	for item in df['item_id']:
+		if item in item_dict:
+			item_dict[item] += 1
+		else:
+			item_dict.update({item: 1})
+	
+	item_count_dict = {}
+	for item in item_dict:
+		if item_dict[item] in item_count_dict:
+			item_count_dict[item_dict[item]] += 1
+		else:
+			item_count_dict.update({item_dict[item]: 1})
+	
+	#print([item_count_dict[c] for c in range(1, 51)])
+	'''
+	plt.bar([c for c in range(1, 51)], [item_count_dict[c] for c in range(1, 51)],
+			label="Item Count", color='g')
+	plt.xlabel('item occur times')
+	plt.ylabel('occur times counts')
+	plt.title('Item Distribution')
+	plt.legend()
+	plt.show()
+	'''
+	
+	item_list = []
+	item_times_list = []
+	sorted(item_dict.items(), key=lambda e: e[1], reverse=True)
+	for item in item_dict:
+		if item_dict[item] > 1300:
+			item_list.append(str(int(item))[0:3])
+			item_times_list.append(item_dict[item])
+	#print(item_list)
+	#print(item_times_list)
+	plt.bar([id for id in range(len(item_list))], item_times_list, 
+			label="Item Count", color='g')
+	plt.xlabel('item id')
+	plt.ylabel('occur times')
+	plt.title('Top20 Items')
+	plt.legend()
+	plt.show()
+
 
 if __name__ == '__main__':
 	raw_convert_csv('training')
