@@ -18,7 +18,7 @@
 							
 10:user_id		#用户编号 dtype=python3 int
 	11:user_gender_id		#用户性别 dtype=python3 int 0/1/2
-							#0-女，1-男，2-家庭
+							#-1-未知，0-女，1-男，2-家庭
 	12:user_age_level		#用户预测年龄等级 dtype=python3 int
 							#数值越大年龄越大
 	13:user_occupation_id	#用户预测职业编号 dtype=python3 int
