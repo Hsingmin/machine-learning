@@ -193,7 +193,7 @@ def run_bottleneck_on_image(sess, image_data, image_data_tensor, bottleneck_tens
 # 
 # Search for the feature vector firstly , if not exists then create it .
 def get_or_create_bottleneck(sess, image_lists, label_name, index, \
-		category, jpeg_data_tensor, bottleneck_tensor): 
+		category, jpeg_data_tensor, bottleneck_tensor):
 	# Get feature vector path corresponding to the image .
 	label_lists = image_lists[label_name]
 	sub_dir = label_lists['dir']

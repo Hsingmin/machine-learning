@@ -333,7 +333,7 @@ if __name__=='__main__':
 
         summary_writer = tf.train.SummaryWriter('/tmp/lstm_logs',session.graph)
 
-        tf.initialize_all_variables().run()  # 对参数变量初始化
+        tf.initialize_all_variables().run()  # 
 
         for i in range(config.max_max_epoch):   # 所有文本要重复多次进入模型训练
             # learning rate 衰减

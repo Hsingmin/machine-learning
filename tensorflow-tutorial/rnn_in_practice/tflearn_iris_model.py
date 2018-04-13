@@ -25,7 +25,7 @@ def custom_model(features, target):
 	# models.logistic_regression() has been removed from tensorflow.contrib.learn 
 	# Get a singel layer full-connected neural network with high-level API in TFLearn .
 	# logits, loss = learn.models.logistic_regression(features, target)
-	logits = tf.contrib.layers.fully_connected(features, 3)	
+	logits = tf.contrib.layers.fully_connected(features, 3)
 	loss = tf.contrib.losses.softmax_cross_entropy(logits, target)
 
 	# Create model optimizer , and get optimize step and train_op .

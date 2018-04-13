@@ -8,8 +8,8 @@
 #
 # -*- author: Hsingmin Lee
 #
-# ijcai_cvr_loader.py -- Convert given dataset *.txt to *.csv format 
-# for visualization and processing .
+# ijcai_data_visualizer.py -- Convert given dataset *.txt to *.csv format 
+# and get data visualization .
 
 import os
 import sys
@@ -521,35 +521,35 @@ def get_item_field_pie(field):
 		autopct='%1.1f%%')
 	plt.title('Item ' + field.split('_')[1].upper() + ' Distribution')
 	plt.show()
-def visualize_item_detail_distribution():
+
+def get_item_field_histogram(field):
 	df = pd.read_csv(os.path.join(DATASET_DIR, "train_item.csv"))
 	
 	# Get item brand distribution .
-	item_brand_dict = {}
-	for brand in df['item_brand_id']:
-		if brand in item_brand_dict:
-			item_brand_dict[brand] += 1
+	item_field_dict = {}
+	for f in df[field]:
+		if f in item_field_dict:
+			item_field_dict[f] += 1
 		else:
-			item_brand_dict.update({brand: 1})
-	item_brand_dict = sorted(item_brand_dict.items(), key=lambda e: e[1], reverse=True)
+			item_field_dict.update({f: 1})
+	item_field_dict = sorted(item_field_dict.items(), key=lambda e: e[0])
 
-	item_brand_list = []
-	item_brand_times = []
+	item_field_list = []
+	item_field_times = []
 
-	for brand in item_brand_dict:
-		item_brand_list.append(brand[0])
-		item_brand_times.append(brand[1])
-	slices = [item_brand_times[i] for i in range(10)]
-	slices.append(sum(item_brand_times[10:]))
-	activities = [item_brand_list[i] for i in range(10)]
-	activities.append('other')
-
-	colors = ['g', 'r', 'b', 'y', 'k', 'm', 'c', 'b', 'g', 'r', 'c']
-	plt.pie(slices, labels=activities,
-		colors=colors, startangle=90,
-		shadow=True, explode=(0.1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0),
-		autopct='%1.1f%%')
-	plt.title('Item Brand distribution')
+	for f in item_field_dict:
+		item_field_list.append(f[0])
+		item_field_times.append(f[1])
+	
+	#interval_list = [-2, 0, 2, 4, 6, 8, 10]
+	#count_list = [shop_score_description_dict[key] for key in interval_list]
+	field = field.replace('_', ' ')
+	plt.bar(item_field_list, item_field_times, 
+			label="%s count" %field, color='g')
+	plt.xlabel(field)
+	plt.ylabel('counts')
+	plt.title('%s Distribution' %(field.upper()))
+	plt.legend()
 	plt.show()
 
 # Convert dataset raw txt format into csv.
@@ -568,7 +568,7 @@ def raw_convert_csv(dataset):
 		print('no dataset intended.')
 		return
 
-
+# Execute every function one by one to visualize the column data distribution.
 if __name__ == '__main__':
 	# visualize_item_distribution()	
 	# visualize_user_distribution()
@@ -576,12 +576,12 @@ if __name__ == '__main__':
 	# visualize_shop_score_distribution()
 	# visualize_item_detail_distribution()
 	
-	get_item_field_pie('item_city_id')
-	get_item_field_pie('item_brand_id')
-
-
-
-
+	# get_item_field_pie('item_city_id')
+	# get_item_field_pie('item_brand_id')
+	# get_item_field_histogram('item_price_level')
+	# get_item_field_histogram('item_sales_level')
+	# get_item_field_histogram('item_pv_level')
+	# get_item_field_histogram('item_collected_level')
 
 
 

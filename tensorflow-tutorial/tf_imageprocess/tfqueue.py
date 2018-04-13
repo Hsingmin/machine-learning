@@ -67,6 +67,7 @@ queue = tf.FIFOQueue(100, "float")
 # Push operation to queue .
 enqueue_op = queue.enqueue([tf.random_normal([1])])
 
+
 # Create multiple threads to run enqueue operations .
 # [enqueue_op]*5 starting 5 threads in which enqueue_op running .
 qr = tf.train.QueueRunner(queue, [enqueue_op]*5)
