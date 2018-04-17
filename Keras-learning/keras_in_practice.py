@@ -128,17 +128,109 @@ print(model.summary())
 # Plot graph
 plot_model(model, to_file='shared_feature_extractor_graph.png')
 """
-
+"""
 import codecs
 from keras.utils import plot_model
 from keras.models import Model
 from keras.layers import Input, Dense, TimeDistributed, Flatten
+from keras.layers import GRU, Bidirectional
 
 visible = Input(shape=(128, 322, 3))
 m = TimeDistributed(Flatten(), name='timedistrib')(visible)
+# m = Bidirectional(GRU(256, return_sequences=True), name='bgru')(m)
+m = GRU(256, return_sequences=True, name='gru')(m)
 output = Dense(10, activation='sigmoid')(m)
 model = Model(inputs=visible, outputs=output)
-# print(model.summary())
-with codecs.open('./model.txt', 'w', 'utf-8') as file:
-    print(str(model.summary()), file=file)
+print(model.summary())
+plot_model(model, to_file='bgru_model_graph.png')
+"""
+
+from keras.utils import plot_model
+from keras.models import Model
+from keras.layers import Input, Dense, Lambda
+from keras.optimizers import SGD
+import numpy as np
+import random
+
+def lambda_func(args):
+    y_pred, label = args
+    return abs(y_pred - label)
+
+def get_model():
+    visible = Input(shape=(10,), name='visible')
+    hidden1 = Dense(10, activation='relu')(visible)
+    hidden2 = Dense(20, activation='relu')(hidden1)
+    hidden3 = Dense(10, activation='relu')(hidden2)
+    y_pred = Dense(1, activation='sigmoid')(hidden3)
+    basemodel = Model(inputs=visible, outputs=y_pred)
+
+    label = Input(shape=[None,], name='label')
+    loss_out = Lambda(lambda_func, output_shape=(1,), name='percep')([y_pred, label])
+    model = Model(inputs=[visible, label], outputs=[loss_out])
+    sgd = SGD(lr=0.01, decay=1e-4, momentum=0.9, nesterov=True, clipnorm=5)
+
+    basemodel.compile(loss={'percep': lambda y_true, y_pred: y_pred}, optimizer=sgd)
+
+    return model, basemodel
+
+def show_model():
+    model, basemodel = get_model()
+    # Summarize layers
+    print(model.summary())
+    # Plot graph
+    plot_model(model, to_file='multilayer_perceptron_graph.png')
+
+def gen():
+    X_train = np.random.random(size=10)
+    y_train = np.array(random.randint(0,9))
+    yield (X_train, y_train)
+
+def train_op(data, labels):
+    model, basemodel = get_model()
+    # model.fit_generator(gen(), steps_per_epoch=100, epochs=2000)
+    basemodel.fit(data, labels, epochs=10, batch_size=100)
+    print('train model.')
+
+if __name__ == '__main__':
+    X_train = np.random.random((1000, 10))
+    y_train = np.random.randint(2, size=(1000, 1))
+    train_op(X_train, y_train)
+
+"""
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Dropout
+
+# Generate dummy data
+x_train = np.random.random((1000, 20))
+y_train = np.random.randint(2, size=(1000, 1))
+x_test = np.random.random((100, 20))
+y_test = np.random.randint(2, size=(100, 1))
+
+model = Sequential()
+model.add(Dense(64, input_dim=20, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(64, activation='relu'))
+model.add(Dropout(0.5))
+model.add(Dense(1, activation='sigmoid'))
+
+model.compile(loss='binary_crossentropy',
+              optimizer='rmsprop',
+              metrics=['accuracy'])
+model.fit(x_train, y_train,
+          epochs=20,
+          batch_size=128)
+score = model.evaluate(x_test, y_test, batch_size=128)
+"""
+
+
+
+
+
+
+
+
+
+
+
 

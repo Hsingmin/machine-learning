@@ -96,19 +96,22 @@ if os.path.exists(modelPath):
 def predict(im):
     # Convert image into binary format.
     im = im.convert('L')
+    # Scalling image.
     scale = im.size[1]*1.0 / 32
     w = im.size[0] / scale
     w = int(w)
     im = im.resize((w,32))
+    # Convert to 256-grayscale image.
     img = np.array(im).astype(np.float32)/255.0
     X  = img.reshape((32,w,1))
     X = np.array([X])
     # Model method with batch data as input to get predict result.    
     y_pred = basemodel.predict(X)
     y_pred = y_pred[:,2:,:]
+    # String object decode.
     out    = decode(y_pred)
-    #out = K.get_value(K.ctc_decode(y_pred, input_length=np.ones(y_pred.shape[0])*y_pred.shape[1], )[0][0])[:, :]
-    #out = u''.join([characters[x] for x in out[0]])
+    # out = K.get_value(K.ctc_decode(y_pred, input_length=np.ones(y_pred.shape[0])*y_pred.shape[1], )[0][0])[:, :]
+    # out = u''.join([characters[x] for x in out[0]])
 
     if len(out)>0:
         while out[0]==u'。':
@@ -121,6 +124,7 @@ def predict(im):
 
 def decode(pred):
         charactersS = characters+u' '
+        # Get max value index in axis 2.
         t = pred.argmax(axis=2)[0]
         length = len(t)
         char_list = []
