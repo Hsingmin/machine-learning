@@ -1,11 +1,11 @@
 # -*- coding: utf-8 -*-
+# Pytorch used.
 from train import *
 model,basemodel = get_model(height=imgH, nclass=nclass)
 import os
 modelPath = '../pretrain-models/keras.hdf5'
 if os.path.exists(modelPath):
        basemodel.load_weights(modelPath)
-        
 batchSize = 32
 train_loader = torch.utils.data.DataLoader(
     train_dataset, batch_size=batchSize,
@@ -28,11 +28,11 @@ for i in range(3):
                 X = X.numpy()
                 X = X.reshape((-1,imgH,imgW,1))
                 Y = np.array(Y)
-                
+
                 Length = int(imgW/4)-2
                 batch = X.shape[0]
-                X,Y = [X, Y, np.ones(batch)*Length, np.ones(batch)*n_len], np.ones(batch)    
-                model.train_on_batch( X,Y)  
+                X,Y = [X, Y, np.ones(batch)*Length, np.ones(batch)*n_len], np.ones(batch)
+                model.train_on_batch( X,Y)
                 if j%interval==0 :
                    X,Y  =  next(iter(test_loader))
                    X = X.numpy()
@@ -40,8 +40,7 @@ for i in range(3):
                    Y = Y.numpy()
                    Y = np.array(Y)
                    batch = X.shape[0]
-                   X,Y = [X, Y, np.ones(batch)*Length, np.ones(batch)*n_len], np.ones(batch) 
-                   
+                   X,Y = [X, Y, np.ones(batch)*Length, np.ones(batch)*n_len], np.ones(batch)
                    crrentLoss = model.evaluate(X,Y)
                    print "step:{},loss:{},crrentLoss:{}".format(j,loss,crrentLoss)
                    if crrentLoss<loss:
@@ -51,4 +50,3 @@ for i in range(3):
                         basemodel.save(path)
 
                 j+=1
-                

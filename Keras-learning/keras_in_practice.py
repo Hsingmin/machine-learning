@@ -144,6 +144,45 @@ model = Model(inputs=visible, outputs=output)
 print(model.summary())
 plot_model(model, to_file='bgru_model_graph.png')
 """
+"""
+import numpy as np
+from keras.models import Sequential
+from keras.layers import Dense, Dropout, Lambda
+
+# Generate dummy data
+def load_data():
+    x_train = np.random.random((1000, 20))
+    y_train = np.random.randint(2, size=(1000, 1))
+    x_test = np.random.random((100, 20))
+    y_test = np.random.randint(2, size=(100, 1))
+
+    return x_train, y_train, x_test, y_test
+
+def biloss_lambda_func(args):
+    return abs(1-args);
+
+def get_seq_model():
+    model = Sequential()
+    model.add(Dense(64, input_dim=20, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(64, activation='relu'))
+    model.add(Dropout(0.5))
+    model.add(Dense(1, activation='sigmoid'))
+
+    model.add(Lambda(biloss_lambda_func, name='biloss'))
+    model.compile(loss={'biloss': lambda y_pred, y_true: y_pred},
+             optimizer='rmsprop',
+             metrics=['accuracy'])
+    # model.compile(loss='mse', optimizer='rmsprop', metrics=['accuracy'])
+    return model
+def test_seq_model():
+    x_train, y_train, x_test, y_test = load_data()
+    model = get_seq_model()
+    model.fit(x_train, y_train,
+          epochs=20,
+          batch_size=128)
+    score = model.evaluate(x_test, y_test, batch_size=128)
+"""
 
 from keras.utils import plot_model
 from keras.models import Model
@@ -154,6 +193,7 @@ import random
 
 def lambda_func(args):
     y_pred, label = args
+    print('SELF-DEFINED LOSS FUNCTION CALLED >>>>')
     return abs(y_pred - label)
 
 def get_model():
@@ -168,62 +208,46 @@ def get_model():
     loss_out = Lambda(lambda_func, output_shape=(1,), name='percep')([y_pred, label])
     model = Model(inputs=[visible, label], outputs=[loss_out])
     sgd = SGD(lr=0.01, decay=1e-4, momentum=0.9, nesterov=True, clipnorm=5)
-
-    basemodel.compile(loss={'percep': lambda y_true, y_pred: y_pred}, optimizer=sgd)
-
-    return model, basemodel
+    model.compile(loss={'percep': lambda y_true, y_pred: y_pred}, optimizer=sgd)
+    return model
 
 def show_model():
-    model, basemodel = get_model()
+    model = get_model()
     # Summarize layers
     print(model.summary())
     # Plot graph
     plot_model(model, to_file='multilayer_perceptron_graph.png')
 
 def gen():
-    X_train = np.random.random(size=10)
-    y_train = np.array(random.randint(0,9))
-    yield (X_train, y_train)
+    while 1:
+        X_train = np.random.random((1, 10))
+        y_train = np.random.randint(2, size=(1, 1))
+        yield ([X_train, y_train], y_train)
 
-def train_op(data, labels):
-    model, basemodel = get_model()
-    # model.fit_generator(gen(), steps_per_epoch=100, epochs=2000)
-    basemodel.fit(data, labels, epochs=10, batch_size=100)
-    print('train model.')
-
-if __name__ == '__main__':
+def load_data():
     X_train = np.random.random((1000, 10))
     y_train = np.random.randint(2, size=(1000, 1))
-    train_op(X_train, y_train)
 
-"""
-import numpy as np
-from keras.models import Sequential
-from keras.layers import Dense, Dropout
+    X_test = np.random.random((100, 10))
+    y_test = np.random.randint(2, size=(100, 1))
+    return X_train, y_train, X_test, y_test
 
-# Generate dummy data
-x_train = np.random.random((1000, 20))
-y_train = np.random.randint(2, size=(1000, 1))
-x_test = np.random.random((100, 20))
-y_test = np.random.randint(2, size=(100, 1))
+def train_op():
+    X_train, y_train, X_test, y_test = load_data()
+    print('train model.')
+    model = get_model()
+    model.fit_generator(gen(), steps_per_epoch=100, epochs=2000)
 
-model = Sequential()
-model.add(Dense(64, input_dim=20, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(64, activation='relu'))
-model.add(Dropout(0.5))
-model.add(Dense(1, activation='sigmoid'))
+    print('evaluate model.')
+    score = model.evaluate_generator(gen(), val_samples=10)
+    print('Total loss on Testing dataset = ', score)
+    print('Accuracy on Testing dataset = ', 1-score)
+    result = model.predict([X_test, y_test])
+    print(result)
 
-model.compile(loss='binary_crossentropy',
-              optimizer='rmsprop',
-              metrics=['accuracy'])
-model.fit(x_train, y_train,
-          epochs=20,
-          batch_size=128)
-score = model.evaluate(x_test, y_test, batch_size=128)
-"""
-
-
+if __name__ == '__main__':
+    # test_seq_model()
+    train_op()
 
 
 

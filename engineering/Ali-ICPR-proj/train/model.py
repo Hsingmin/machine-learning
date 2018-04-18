@@ -16,7 +16,6 @@ def ctc_lambda_func(args):
 
 
 def get_model(height,nclass):
-    
     input = Input(shape=(height,None,1),name='the_input')
     m = Conv2D(64,kernel_size=(3,3),activation='relu',padding='same',name='conv1')(input)
     m = MaxPooling2D(pool_size=(2,2),strides=(2,2),name='pool1')(m)
