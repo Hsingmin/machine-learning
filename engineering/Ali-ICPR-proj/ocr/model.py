@@ -5,6 +5,7 @@
 #   keras: 2.1.2
 #   numpy: 1.14.0
 # package: ocr
+# author: Hsingmin Lee
 # ocr.model defines the CNN+GRU+CTC structure to solve text reconize task
 # for Ali-ICPR-2018 match.
 
@@ -14,11 +15,9 @@ from keras.models import Model
 from keras.layers import Lambda
 from keras.optimizers import SGD
 import numpy as np
-#from PIL import Image
 import keras.backend  as K
-import keys
+import ocr.keys as keys
 import os
-#from keras.models import load_model
 
 # Get CTC loss on each batch element.
 # Using Tensorflow backend to process underlying operation.
@@ -26,7 +25,6 @@ def ctc_lambda_func(args):
     y_pred, labels, input_length, label_length = args
     y_pred = y_pred[:, 2:, :]
     return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
-
 
 def get_model(height,nclass):
     rnnunit  = 256
@@ -82,18 +80,22 @@ def get_model(height,nclass):
     model.compile(loss={'ctc': lambda y_true, y_pred: y_pred}, optimizer=sgd)
     #model.summary()
     return model,basemodel
-# Characters table in keys.py
-characters = keys.alphabet[:]
 
-# Persistent model weights loaded in.
-modelPath = os.path.join(os.getcwd(),"ocr/ocr0.2.h5")
-height = 32
-nclass = len(characters)
-if os.path.exists(modelPath):
-    model,basemodel = get_model(height,nclass+1)
-    basemodel.load_weights(modelPath)
+def load_model(height, nclass, basemodel):
+    # Characters table in keys.py
+    characters = keys.alphabet[:]
 
-def predict(im):
+    # Persistent model weights loaded in.
+    modelPath = os.path.join(os.getcwd(),"ocr0.2.h5")
+    height = 32
+    nclass = len(characters)
+    if os.path.exists(modelPath):
+        # model,basemodel = get_model(height,nclass+1)
+        basemodel.load_weights(modelPath)
+
+    return basemodel
+
+def predict(im, basemodel):
     # Convert image into binary format.
     im = im.convert('L')
     # Scalling image.
@@ -104,6 +106,7 @@ def predict(im):
     # Convert to 256-grayscale image.
     img = np.array(im).astype(np.float32)/255.0
     X  = img.reshape((32,w,1))
+    # X = img.reshape((1, 32, w, 1))
     X = np.array([X])
     # Model method with batch data as input to get predict result.    
     y_pred = basemodel.predict(X)
@@ -123,6 +126,8 @@ def predict(im):
     return out
 
 def decode(pred):
+        # Characters table in keys.py
+        characters = keys.alphabet[:]
         charactersS = characters+u' '
         # Get max value index in axis 2.
         t = pred.argmax(axis=2)[0]
