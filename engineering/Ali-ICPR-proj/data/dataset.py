@@ -6,13 +6,8 @@
 #		numpy 1.13.1
 # -*- author: Hsingmin Lee
 #
-# inception_migration.py -- Migration learning with Inception-v3 model .
-#
-# Regard the former layers except the last full-connected layer as 
-# a whole the layer called bottleneck .
-# Bottleneck is used to extract image features for the new single
-# full-connected layer that needed to be trained to solve another
-# classification problem .
+# dataset.py -- import data.dataset to get train/validate-dataset and
+# test dataset .
 
 import glob
 import os.path
@@ -21,28 +16,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
-# Bottleneck tensor number in Inception-v3 model .
-BOTTLENECK_TENSOR_SIZE = 2048
-
-# Tensor name in Inception-v3 model to give bottleneck layer result .
-#
-# In Inception-v3 model provided by google , the bottleneck layer name 
-# 'pool_3/reshape:0' , that can be accessed by tensor.name during model training . 
-BOTTLENECK_TENSOR_NAME = 'pool_3/_reshape:0'
-
-# Tensor name for JPEG image input .
-JPEG_DATA_TENSOR_NAME = 'DecodeJpeg/contents:0'
-# Model saved path .
-MODEL_DIR = './model'
-# Model name .
-MODEL_FILE = 'classify_image_graph_def.pb'
-
-# Save the feature vectors to specified file for training dataset
-# would be used for many times . 
-CACHE_DIR = './tmp/bottleneck'
-
-# Image data directory .
-INPUT_DATA = './data/flower_photos'
+# Train-dataset directory .
+INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
 
 # Validation data percentage .
 VALIDATION_PERCENTAGE = 10
@@ -50,70 +25,70 @@ VALIDATION_PERCENTAGE = 10
 TEST_PERCENTAGE = 10
 
 # Network arguments setting .
-LEARNING_RATE = 0.01
-STEPS = 4000
-BATCH = 100
+BATCH_SIZE = 100
 
-# Dispatch training dataset , validation dataset and testing dataset
-# from image file .
-def create_image_lists(testing_percentage, validation_percentage):
-	# Save all images dispatched from data file into dictionary result ,
-	# in which key means class name , value is a dictionary including images name.
-	result = {}
-	# Get all sub-directories in input data path . 
-	sub_dirs = [x[0] for x in os.walk(INPUT_DATA)]
+class Dataset(object):
+    def __init__(self, data_path, validation_percentage, testing_percentage):
+        self.data_path = data_path
+        self.validation_percentage = validation_percentage
+        self.testing_percentage = testing_percentage
 
-	# The first element is root directory that needed to be ignored . 
-	#
-	# sub_dirs=['./data/flower_photos',
-	#           './data/flower_photos/daisy',
-	# 	    './data/flower_photos/dandelion',
-	#           './data/flower_photos/roses',
-	#           './data/flower_photos/sunflowers',
-	#           './data/flower_photos/tulips']
-	
-	# The first element in list is root directory .
-	is_root_dir = True
-	for sub_dir in sub_dirs:
-		if is_root_dir:
-			is_root_dir = False
-			continue
-		
-		# Get all valid images in current directory .
-		extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
-		file_list = []
-		dir_name = os.path.basename(sub_dir)
-		for extension in extensions:
-			# Image full name .
-			file_glob = os.path.join(INPUT_DATA, dir_name, '*.'+extension)
-			file_list.extend(glob.glob(file_glob))
-		if not file_list: continue
+    def splite_dataset(self):
+        # Save all images dispatched from data file into dictionary result ,
+        # in which key means class name , value is a dictionary including images name.
+        result = {}
+        # Get all sub-directories in input data path . 
+        sub_dirs = [x[0] for x in os.walk(INPUT_DATA)]
 
-		# Get class name through directory information .
-		label_name = dir_name.lower()
-		# Initialize testing dataset , vlidation dataset and training dataset 
-		# in current category .
-		training_images = []
-		testing_images = []
-		validation_images = []
-		
-		for file_name in file_list:
-			# Get clean file name without path as prefix .
-			base_name = os.path.basename(file_name)
-			chance = np.random.randint(100)
-			if chance < validation_percentage:
-				validation_images.append(base_name)
-			elif chance < (testing_percentage + validation_percentage):
-				testing_images.append(base_name)
-			else:
-				training_images.append(base_name)
-		# Place current category data into dictionary result 
-		# label_name as the key of list image_lists . 
-		result[label_name] = {'dir': dir_name,\
-				      'training': training_images,\
-				      'testing': testing_images,\
-				      'validation': validation_images}
-	return result
+        # The first element is root directory that needed to be ignored . 
+        #
+        # sub_dirs=['./data/flower_photos', 
+        #           './data/flower_photos/daisy',
+        # 	    './data/flower_photos/dandelion',
+        #           './data/flower_photos/roses',
+        #           './data/flower_photos/sunflowers',
+        #           './data/flower_photos/tulips']
+
+        # The first element in list is root directory .
+        is_root_dir = True
+        for sub_dir in sub_dirs:
+            if is_root_dir:
+                is_root_dir = False
+                continue
+            # Get all valid images in current directory .
+            extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
+            file_list = []
+            dir_name = os.path.basename(sub_dir)
+            for extension in extensions:
+                # Image full name .
+                file_glob = os.path.join(INPUT_DATA, dir_name, '*.'+extension)
+                file_list.extend(glob.glob(file_glob))
+                if not file_list: continue
+
+            # Get class name through directory information .
+            label_name = dir_name.lower()
+            # Initialize testing dataset , vlidation dataset and training dataset 
+            # in current category .
+            training_images = []
+            testing_images = []
+            validation_images = []
+            for file_name in file_list:
+                # Get clean file name without path as prefix .
+                base_name = os.path.basename(file_name)
+                chance = np.random.randint(100)
+                if chance < validation_percentage:
+                    validation_images.append(base_name)
+                elif chance < (testing_percentage + validation_percentage):
+                    testing_images.append(base_name)
+                else:
+            training_images.append(base_name)
+            # Place current category data into dictionary result 
+            # label_name as the key of list image_lists . 
+            result[label_name] = {'dir': dir_name,
+                    'training': training_images,
+                    'testing': testing_images,
+                    'validation': validation_images}
+            return result
 
 # Get image directory through label_name , category , index arguments .
 # label_name : image class label as 'daisy', 'sunflowers', 'dandelion', 'roses', 'tulips' .
@@ -125,7 +100,7 @@ def create_image_lists(testing_percentage, validation_percentage):
 def get_image_path(image_lists, image_dir, label_name, index, category):
 	# Get all image information in given class label .
 	label_lists = image_lists[label_name]
-	
+
 	# Get all image information in given divided category .
 	category_list = label_lists[category]
 

@@ -1,4 +1,5 @@
 #coding:utf-8
+# ocr_test.py
 import ocr.model as om
 from glob import glob
 import numpy as np
