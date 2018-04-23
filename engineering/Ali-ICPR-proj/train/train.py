@@ -1,94 +1,98 @@
 # -*- coding: utf-8 -*-
-# pytorch used.
-import torch
-import dataset
-import keys
+#
+# -*- version:
+#		python 3.5.2
+#		tensorflow 1.4.0 
+#		numpy 1.13.1
+# -*- author: Hsingmin Lee
+#
+# train.py -- Train ocr model with dataset provided by data.dataset.Dataset .
+
+import glob
+import os.path
+import random
 import numpy as np
+import tensorflow as tf
+from tensorflow.python.platform import gfile
 
-characters = keys.alphabet[:]
-from model import get_model
+import sys
+sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
+import data.dataset as dataset
+import ocr.model as om
 
-nclass = len(characters)+1
+# Train-dataset directory .
+INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
 
-import keras.backend as K
+# Validation data percentage .
+VALIDATION_PERCENTAGE = 10
+# Test data percentage .
+TEST_PERCENTAGE = 10
 
-trainroot = '../data/lmdb/train'
-valroot   = '../data/lmdb/val'
-batchSize = 32
-workers = 4
-imgH = 32
-imgW = 256
-keep_ratio = False
-random_sample = False
+# Network arguments setting .
+BATCH_SIZE = 32
 
+# Network arguments setting .
+LEARNING_RATE = 0.01
+STEPS = 4000
 
-def one_hot(text,length=10,characters=characters):
-     label = np.zeros(length)
-     for i,char in enumerate(text.decode('utf-8')):
-        index = characters.find(char)
-        if index==-1:
-            index = characters.find(u' ')
-        label[i] = index
-     return label
+def load_dataset(path, validation_percentage, test_percentage):
+    dt = dataset.Dataset(path, validation_percentage, test_percentage)
+    dt.split()
+    train_dataset = dt.get_train()
+    # validation_dataset = dt.get_validation()
+    # test_dataset = dt.get_test()
+    return train_dataset
 
-n_len = 10
-def gen(loader,flag='train'):
+# Batch generator for ocr model training.
+def batch_generator():
+    # train_dataset = load_dataset(INPUT_DATA, VALIDATION_PERCENTAGE, TEST_PERCENTAGE)
     while True:
-        i =0
-        n = len(loader)
-        for X,Y in loader:
-            X = X.numpy()
-            X = X.reshape((-1,imgH,imgW,1))
-            if flag=='test':
-                Y = Y.numpy()
-
-            Y = np.array(Y)
-            Length = int(imgW/4)-1
-            batchs = X.shape[0]
-            #Y = Y.numpy()
-            if i>n-1:
-                i = 0
-                break
-
-            yield [X, Y, np.ones(batchs)*int(Length), np.ones(batchs)*n_len], np.ones(batchs)
-
-if random_sample:
-    sampler = dataset.randomSequentialSampler(train_dataset, batchSize)
-else:
-    sampler = None
-train_dataset = dataset.lmdbDataset(root=trainroot,target_transform=one_hot)
-
-train_loader = torch.utils.data.DataLoader(
-    train_dataset, batch_size=batchSize,
-    shuffle=True, sampler=sampler,
-    num_workers=int(workers),
-    collate_fn=dataset.alignCollate(imgH=imgH, imgW=imgW, keep_ratio=keep_ratio))
-
-test_dataset = dataset.lmdbDataset(
-    root=valroot, transform=dataset.resizeNormalize((imgW, imgH)),target_transform=one_hot)
+        X_train, y_train = batch_loader()
+        yield (X_train, y_train)
 
 
-test_loader = torch.utils.data.DataLoader(
-        test_dataset, shuffle=True, batch_size=batchSize, num_workers=int(workers))
+# Batch provider for ocr model training.
+def batch_loader():
+    train_dataset = load_dataset(INPUT_DATA, VALIDATION_PERCENTAGE, TEST_PERCENTAGE)
+    X_train = []
+    y_train = []
+
+    for i in range(BATCH_SIZE):
+        img = train_dataset[np.random.randint(len(train_dataset))]
+        X_train.append(img)
+        y_train.append(os.path.basename(img).split('.')[0])
+
+    return X_train, y_train
+
+# Train ocr model .
+def main(argv=None):
+    alligned_height = 32
+    characters = om.keys.alphabet[:]
+    nclass = len(characters)
+	model, basemodel = om.get_model(alligned_height, nclass)
+    # Get train batch .
+    # Train model input:
+    #   input = Input(name='the_input', shape=(height, None, 1))
+    #   labels = Input(name='the_labels', shape=[None,], dtype='float32')
+    #   input_length = Input(name='input_length', shape=[1], dtype='int64')
+    #   label_length = Input(name='label_length', shape=[1], dtype='int64')
+    X_batch, y_batch = batch_loader()
+    print(X_batch)
+    print(y_batch)
+
+if __name__ == '__main__':
+	tf.app.run()
 
 
-if __name__=='__main__':
-    from keras.callbacks import ModelCheckpoint,ReduceLROnPlateau
-    model,basemodel = get_model(height=imgH, nclass=nclass)
-    import os
-    if os.path.exists('../pretrain-models/keras.hdf5'):
-       basemodel.load_weights('../pretrain-models/keras.hdf5')
 
-    ##注意此处保存的是model的权重
-    checkpointer = ModelCheckpoint(filepath="save_model/model{epoch:02d}-{val_loss:.4f}.hdf5",monitor='val_loss',         verbose=0,save_weights_only=False, save_best_only=True)
-    rlu = ReduceLROnPlateau(monitor='val_loss', factor=0.1, patience=1, verbose=0, mode='auto', epsilon=0.0001, cooldown=0, min_lr=0)
 
-    model.fit_generator(gen(train_loader,flag='train'),
-                    steps_per_epoch=102400,
-                    epochs=200,
-                    validation_data=gen(test_loader,flag='test'),
-                    callbacks=[checkpointer,rlu],
-                    validation_steps=1024)
+
+
+
+
+
+
+
 
 
 

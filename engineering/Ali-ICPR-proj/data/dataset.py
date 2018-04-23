@@ -16,6 +16,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.platform import gfile
 
+"""
 # Train-dataset directory .
 INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
 
@@ -26,17 +27,18 @@ TEST_PERCENTAGE = 10
 
 # Network arguments setting .
 BATCH_SIZE = 100
+"""
 
 class Dataset(object):
-    def __init__(self, data_path, validation_percentage, testing_percentage):
+    def __init__(self, data_path, validation_percentage, test_percentage):
         self.data_path = data_path
         self.validation_percentage = validation_percentage
-        self.testing_percentage = testing_percentage
-        self.testing_dataset = []
-        self.validation_dataset = []
-        self.train_dataset = []
+        self.test_percentage = test_percentage
+        self.test = []
+        self.validation = []
+        self.train = []
 
-    def split_dataset(self):
+    def split(self):
         img_list = []
         for rootdir, subdirs, filenames in os.walk(INPUT_DATA):
             for filename in filenames:
@@ -44,28 +46,29 @@ class Dataset(object):
 
         for img in img_list:
             chance = np.random.randint(100)
-            if chance < self.testing_percentage:
-                self.testing_dataset.append(img)
-            elif chance < self.testing_percentage + self.validation_percentage:
-                self.validation_dataset.append(img)
+            if chance < self.test_percentage:
+                self.test.append(img)
+            elif chance < self.test_percentage + self.validation_percentage:
+                self.validation.append(img)
             else:
-                self.train_dataset.append(img)
+                self.train.append(img)
 
-    def get_train_dataset(self):
-        return self.train_dataset
-    def get_testing_dataset(self):
-        return self.testing_dataset
-    def get_validation_dataset(self):
-        return self.validation_dataset
+    def get_train(self):
+        return self.train
+    def get_test(self):
+        return self.test
+    def get_validation(self):
+        return self.validation
 
+"""
 def main(argv=None):
     dt = Dataset(INPUT_DATA, VALIDATION_PERCENTAGE, TEST_PERCENTAGE)
-    dt.split_dataset()
-    test_dataset = dt.get_testing_dataset()
+    dt.split()
+    test_dataset = dt.get_test()
     print(test_dataset)
 if __name__ == '__main__':
     tf.app.run()
-
+"""
 
 
 
