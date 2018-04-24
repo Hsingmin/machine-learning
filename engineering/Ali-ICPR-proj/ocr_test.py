@@ -23,14 +23,13 @@ if __name__ =='__main__':
     basemodel = om.load_model(height, nclass, basemodel)
     # print(basemodel.summary())
     # print(np.shape(img))
-    """
     bimg = im.convert('L')
     scale = bimg.size[1]*1.0/32
     width = int(bimg.size[0]/scale)
-    # bimg = bimg.resize((width, 32))
-    # bimg.save('./bimg.png')
-    """
-    # print(basemodel.summary())
+    bimg = bimg.resize((width, 32))
+    bimg.save('./nbimg.png')
+    print(np.shape(bimg))
+    print(basemodel.summary())
     result = om.predict(im, basemodel)
     print("---------------------------------------")
     for key in result:
