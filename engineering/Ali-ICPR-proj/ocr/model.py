@@ -19,6 +19,8 @@ import keras.backend  as K
 import ocr.keys as keys
 import os
 
+# h5_path = 'd:/python_work/h5'
+
 # Get CTC loss on each batch element.
 # Using Tensorflow backend to process underlying operation.
 def ctc_lambda_func(args):
@@ -81,18 +83,10 @@ def get_model(height,nclass):
     #model.summary()
     return model,basemodel
 
-def load_model(height, nclass, basemodel):
-    # Characters table in keys.py
-    characters = keys.alphabet[:]
-
-    # Persistent model weights loaded in.
-    modelPath = os.path.join(os.getcwd(),"ocr0.2.h5")
-    height = 32
-    nclass = len(characters)
-    if os.path.exists(modelPath):
-        # model,basemodel = get_model(height,nclass+1)
-        basemodel.load_weights(modelPath)
-
+def load_model(basemodel, h5_path):
+    model_path = h5_path
+    if os.path.exists(model_path):
+        basemodel.load_weights(model_path)
     return basemodel
 
 def predict(im, basemodel):

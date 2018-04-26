@@ -9,25 +9,15 @@
 # dataset.py -- import data.dataset to get train/validate-dataset and
 # test dataset .
 
-import glob
 import os
-import random
 import numpy as np
 import tensorflow as tf
-from tensorflow.python.platform import gfile
 
-"""
-# Train-dataset directory .
-INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
+import sys
+sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
+import ocr.model as om
 
-# Validation data percentage .
-VALIDATION_PERCENTAGE = 10
-# Test data percentage .
-TEST_PERCENTAGE = 10
-
-# Network arguments setting .
-BATCH_SIZE = 100
-"""
+characters = om.keys.alphabet[:]
 
 class Dataset(object):
     def __init__(self, data_path, validation_percentage, test_percentage):
@@ -74,15 +64,26 @@ class AlignedBatch(object):
             aligned_batch.append(padding_sample)
         return aligned_batch
 
-"""
-def main(argv=None):
-    dt = Dataset(INPUT_DATA, VALIDATION_PERCENTAGE, TEST_PERCENTAGE)
-    dt.split()
-    test_dataset = dt.get_test()
-    print(test_dataset)
-if __name__ == '__main__':
-    tf.app.run()
-"""
+class AlignedOnehot(object):
+    def __init__(self, length=10, characters=characters):
+        self.length = length
+        self.characters = characters
+
+    def __call__(self, batch):
+        self.length = max(len(sample) for sample in batch)
+        label = [np.zeros(self.length)]*len(batch)
+
+        for j, sample in enumerate(batch):
+            if len(sample) < self.length:
+                sample += u' ' * (self.length-len(sample))
+
+            for i, char in enumerate(sample):
+                index = self.characters.find(char)
+                if index == -1:
+                    index = self.characters.find(u' ')
+                label[j][i] = index
+        return label
+
 
 
 
