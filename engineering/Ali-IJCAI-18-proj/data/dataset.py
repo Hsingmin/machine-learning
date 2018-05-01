@@ -80,9 +80,9 @@ def shop_service_encode(x):
     else:
         z = (x-3.93)*10 + 1
 
-    if (z >= 2) & (z <= 12):
+    if (z >= 2) & (z <= 7):
         return 1
-    elif (z >= 13) & (z <= 15):
+    elif (z >= 8) & (z <= 9):
         return 2
     else:
         return 3
@@ -94,9 +94,9 @@ def shop_description_encode(x):
     else:
         z = (x-3.93)*10 + 1
 
-    if (z >= 2) & (z <= 12):
+    if (z >= 2) & (z <= 8):
         return 1
-    elif (z >= 13) & (z <= 15):
+    elif (z >= 9) & (z <= 10):
         return 2
     else:
         return 3
@@ -185,7 +185,8 @@ def split_shop_feature(data):
     data['shop_reviewrate_segment'] = data['shop_review_positive_rate'].apply(shop_reviewrate_encode)
     reviewrate_segment_counts = data.shop_reviewrate_segment.value_counts()
 
-    data['shop_field'] = data.apply(lambda x: 1 if (x.shop_delivery_segment == 3) & (x.shop_description_segment == 3)
+    # Get shop feature data normal interval.
+    data['shop_normal'] = data.apply(lambda x: 1 if (x.shop_delivery_segment == 3) & (x.shop_description_segment == 3)
             & (x.shop_reviewrate_segment == 3) & (x.shop_service_segment == 3) else 0, axis=1)
     del data['shop_delivery_segment']
     del data['shop_description_segment']
