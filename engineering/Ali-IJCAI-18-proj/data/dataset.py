@@ -275,128 +275,291 @@ def feature_combine(data):
 
     return data
 
+# Combine internal or cross-field features to produce new column in data. 
+# params:
+#       data                        -- public dataset
+#       feature_x                   -- leading feature
+#       feature_list                -- combined features included in one list
+#       x_count_name                -- column name in which feature_x count stored
+#       combined_count_suffix       -- column name suffix in which combined feature count stored,
+#                                      and column name is concated with col and suffix into one string
+#                                      like 'user_gender_id_user_count' etc.
+#       combined_prob_suffix        -- column name suffix in which combined feature probability stored,
+#                                      column name is concated with col and suffix into one string like
+#                                      'user_gender_id_user_prob' etc.
+def feature_combine(data=data, feature_x=feature_x,
+                    feature_list=feature_list, x_count_name=x_count_name,
+                    combined_count_suffix=combined_count_suffix,
+                    combined_prob_suffix=combined_prob_suffix):
+    x_count = data.groupby(by=[feature_x], as_index=False)['instance_id'].agg({x_count_name: 'count'})
+    data = pd.merge(data, x_count, on=[feature_x], how='left')
+    for col in feature_list:
+        col_count = data.groupby(by=[col, feature_x], as_index=False)['instance_id'].agg(
+                {str(col) + combined_count_suffix: 'count'})
+        data = pd.merge(data, col_count, on=[col, feature_x], how='left')
+        data[str(col) + combined_prob_suffix] = data[str(col) + combined_count_suffix]/data[x_count_name]
+
+    del data[x_count_name]
+    return data
+
 # Item feature process which is the key for model.
-def item_feature_process(data):
+# item_id:  - item_brand_id, 
+#           - item_city_id, 
+#           - item_price_level, 
+#           - item_sales_level, 
+#           - item_collected_level, 
+#           - item_pv_level
+# item_brand_id:
+#           - item_city_id, 
+#           - item_price_level, 
+#           - item_sales_level, 
+#           - item_collected_level, 
+#           - item_pv_level
+# item_city_id:
+#           - item_price_level, 
+#           - item_sales_level, 
+#           - item_collected_level, 
+#           - item_pv_level
+# item_price_level:
+#           - item_sales_level, 
+#           - item_collected_level, 
+#           - item_pv_level
+# item_sales_level:
+#           - item_collected_level, 
+#           - item_pv_level
+# item_collected_level:
+#           - item_pv_level
+#
+def item_feature_internal_combine(data):
     # Process item features in detail.
     # item_id combine with other features.
-    item_count = data.groupby(by=['item_id'], as_index=False)['instance_id'].agg({'item_count': 'count'})
-    data = pd.merge(data, item_count, on=['item_id'], how='left')
-    for col in ['item_brand_id', 'item_city_id', 'item_price_level', 'item_sales_level',
-                'item_collected_level', 'item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_item_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_id'], how='left')
-        data[str(col)+'_item_prob'] = data[str(col)+'_item_count']/data['item_count']
-
-    del data['item_count']
+    data = feature_combine(data=data,
+                           feature_x='item_id',
+                           feature_list=['item_brand_id', 'item_city_id',
+                                         'item_price_level', 'item_sales_level',
+                                         'item_collected_level', 'item_pv_level'],
+                           x_count_name='item_count',
+                           combined_count_suffix='_item_count',
+                           combined_prob_suffix='_item_prob')
 
     # item_brand_id combine with other features.
-    item_brand_count = data.groupby(by=['item_brand_id'], as_index=False)['instance_id'].agg(
-            {'item_brand_count': 'count'})
-    data = pd.merge(data, item_brand_count, on=['item_brand_id'], how='left')
-    for col in ['item_city_id', 'item_price_level', 'item_sales_level', 'item_collected_level', 'item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_brand_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_brand_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_brand_id'], how='left')
-        data[str(col) + '_brand_prob'] = data[str(col) + '_brand_count']/data['item_brand_count']
-    del data['item_brand_count']
+    data = feature_combine(data=data,
+                           feature_x='item_brand_id',
+                           feature_list=['item_city_id',
+                                         'item_price_level', 'item_sales_level',
+                                         'item_collected_level', 'item_pv_level'],
+                           x_count_name='item_brand_count',
+                           combined_count_suffix='_item_brand_count',
+                           combined_prob_suffix='_item_brand_prob')
 
     # item_city_id combine with other features.
-    item_city_count = data.groupby(by=['item_city_id'], as_index=False)['instance_id'].agg(
-            {'item_city_count': 'count'})
-    data = pd.merge(data, item_city_count, on=['item_city_id'], how='left')
-    for col in ['item_price_level', 'item_sales_level', 'item_collected_level', 'item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_city_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_city_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_city_id'], how='left')
-        data[str(col) + '_city_prob'] = data[str(col) + '_city_count']/data['item_city_count']
-    del data['item_city_count']
+    data = feature_combine(data=data,
+                           feature_x='item_city_id',
+                           feature_list=['item_price_level', 'item_sales_level',
+                                         'item_collected_level', 'item_pv_level'],
+                           x_count_name='item_city_count',
+                           combined_count_suffix='_item_city_count',
+                           combined_prob_suffix='_item_city_prob')
 
     # item_price_level combine with other features.
-    item_price_count = data.groupby(by=['item_price_level'], as_index=False)['instance_id'].agg(
-            {'item_price_count': 'count'})
-    data = pd.merge(data, item_price_count, on=['item_price_level'], how='left')
-    for col in ['item_sales_level', 'item_collected_level', 'item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_price_level'], as_index=False)['instance_id'].agg(
-                {str(col) + '_price_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_price_level'], how='left')
-        data[str(col) + '_price_prob'] = data[str(col) + '_price_count']/data['item_price_count']
-    del data['item_price_count']
+    data = feature_combine(data=data,
+                           feature_x='item_price_level',
+                           feature_list=['item_sales_level',
+                                         'item_collected_level', 'item_pv_level'],
+                           x_count_name='item_price_count',
+                           combined_count_suffix='_item_price_count',
+                           combined_prob_suffix='_item_price_prob')
 
     # item_sales_level combine with other features.
-    item_sales_count = data.groupby(by=['item_sales_level'], as_index=False)['instance_id'].agg(
-            {'item_sales_count': 'count'})
-    data = pd.merge(data, item_sales_count, on=['item_sales_level'], how='left')
-    for col in ['item_collected_level', 'item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_sales_level'], as_index=False)['instance_id'].agg(
-                {str(col) + '_sales_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_sales_level'], how='left')
-        data[str(col) + '_sales_prob'] = data[str(col) + '_sales_count']/data['item_sales_count']
-    del data['item_sales_count']
+    data = feature_combine(data=data,
+                           feature_x='item_sales_level',
+                           feature_list=['item_collected_level', 'item_pv_level'],
+                           x_count_name='item_sales_count',
+                           combined_count_suffix='_item_sales_count',
+                           combined_prob_suffix='_item_sales_prob')
 
     # item_collected_level combine with other features.
-    item_collected_count = data.groupby(by=['item_collected_level'], as_index=False)['instance_id'].agg(
-            {'item_collected_count': 'count'})
-    data = pd.merge(data, item_collected_count, on=['item_collected_level'], how='left')
-    for col in ['item_pv_level']:
-        col_count = data.groupby(by=[col, 'item_collected_level'], as_index=False)['instance_id'].agg(
-                {str(col) + '_collected_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'item_collected_level'], how='left')
-        data[str(col) + '_collected_prob'] = data[str(col) + '_collected_count']/data['item_collected_count']
-    del data['item_collected_count']
+    data = feature_combine(data=data,
+                           feature_x='item_collected_level',
+                           feature_list=['item_pv_level'],
+                           x_count_name='item_collected_count',
+                           combined_count_suffix='_item_collected_count',
+                           combined_prob_suffix='_item_collected_prob')
 
     return data
 
 # Process user features in detail.
-def user_feature_process(data):
+# user_id:
+#           - user_gender_id
+#           - user_age_level
+#           - user_occupation_id
+#           - user_star_level
+# user_gender_id:
+#           - user_age_level
+#           - user_occupation_id
+#           - user_star_level
+# user_age_level:
+#           - user_occupation_id
+#           - user_star_level
+# user_occupation_id:
+#           - user_star_level
+#
+def user_feature_internal_combine(data):
     # Process user features in detail.
     # user_id combine with other features.
-    user_count = data.groupby(by=['user_id'], as_index=False)['instance_id'].agg({'user_count': 'count'})
-    data = pd.merge(data, user_count, on=['user_id'], how='left')
-    for col in ['user_gender_id', 'user_occupation_id', 'user_age_level', 'user_star_level']:
-        col_count = data.groupby(by=[col, 'user_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_user_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'user_id'], how='left')
-        data[str(col)+'_user_prob'] = data[str(col)+'_user_count']/data['user_count']
-
-    del data['user_count']
+    data = feature_combine(data=data,
+                           feature_x='user_id',
+                           feature_list=['user_gender_id', 'user_occupation_id',
+                                         'user_age_level', 'user_star_level'],
+                           x_count_name='user_count',
+                           combined_count_suffix='_user_count',
+                           combined_prob_suffix='_user_prob')
 
     # user_gender_id combine with other features.
-    user_gender_count = data.groupby(by=['user_gender_id'], as_index=False)['instance_id'].agg(
-            {'user_gender_count': 'count'})
-    data = pd.merge(data, user_gender_count, on=['user_gender_id'], how='left')
-    for col in ['user_occupation_id', 'user_age_level', 'user_star_level']:
-        col_count = data.groupby(by=[col, 'user_gender_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_gender_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'user_gender_id'], how='left')
-        data[str(col)+'_gender_prob'] = data[str(col)+'_gender_count']/data['user_gender_count']
-
-    del data['user_count']
-
-    # user_occupation_id combine with other features.
-    user_occupation_count = data.groupby(by=['user_occupation_id'], as_index=False)['instance_id'].agg(
-            {'user_occupation_count': 'count'})
-    data = pd.merge(data, user_occupation_count, on=['user_occupation_id'], how='left')
-    for col in ['user_age_level', 'user_star_level']:
-        col_count = data.groupby(by=[col, 'user_occupation_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_occupation_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'user_occupation_id'], how='left')
-        data[str(col)+'_occupation_prob'] = data[str(col)+'_occupation_count']/data['user_occupation_count']
-
-    del data['user_occupation_count']
+    data = feature_combine(data=data,
+                           feature_x='user_gender_id',
+                           feature_list=['user_occupation_id',
+                                         'user_age_level', 'user_star_level'],
+                           x_count_name='user_gender_count',
+                           combined_count_suffix='_user_gender_count',
+                           combined_prob_suffix='_user_gender_prob')
 
     # user_age_level combine with other features.
-    user_age_count = data.groupby(by=['user_age_level'], as_index=False)['instance_id'].agg(
-            {'user_occupation_count': 'count'})
-    data = pd.merge(data, user_occupation_count, on=['user_occupation_id'], how='left')
-    for col in ['user_age_level', 'user_star_level']:
-        col_count = data.groupby(by=[col, 'user_occupation_id'], as_index=False)['instance_id'].agg(
-                {str(col) + '_occupation_count': 'count'})
-        data = pd.merge(data, col_count, on=[col, 'user_occupation_id'], how='left')
-        data[str(col)+'_occupation_prob'] = data[str(col)+'_occupation_count']/data['user_occupation_count']
+    data = feature_combine(data=data,
+                           feature_x='user_age_level',
+                           feature_list=['user_occupation_id', 'user_star_level'],
+                           x_count_name='user_age_count',
+                           combined_count_suffix='_user_age_count',
+                           combined_prob_suffix='_user_age_prob')
 
-    del data['user_occupation_count']
+    # user_occupation_id combine with other features.
+    data = feature_combine(data=data,
+                           feature_x='user_occupation_id',
+                           feature_list=['user_star_level'],
+                           x_count_name='user_occupation_count',
+                           combined_count_suffix='_user_occupation_count',
+                           combined_prob_suffix='_user_occupation_prob')
 
+    return data
+
+# Combine user feature with item feature.
+# user_id:
+#           - item features
+# user_gender_id:
+#           - item_features
+# user_age_level:
+#           - item_features
+# user_occupation_id:
+#           - item_features
+#
+def user_item_feature_combine(data):
+    item_features = ['item_id', 'item_brand_id', 'item_city_id', 'item_price_level',
+                     'item_sales_level', 'item_collected_level', 'item_pv_level']
+    # user_id combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='user_id',
+                           feature_list=item_features,
+                           x_count_name='user_count',
+                           combined_count_suffix='_user_count',
+                           combined_prob_suffix='_user_prob')
+
+    # user_gender_id combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='user_gender_id',
+                           feature_list=item_features,
+                           x_count_name='user_gender_count',
+                           combined_count_suffix='_user_gender_count',
+                           combined_prob_suffix='_user_gender_prob')
+
+    # user_age_level combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='user_age_level',
+                           feature_list=item_features,
+                           x_count_name='user_age_count',
+                           combined_count_suffix='_user_age_count',
+                           combined_prob_suffix='_user_age_prob')
+
+    # user_occupation_id combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='user_occupation_id',
+                           feature_list=item_features,
+                           x_count_name='user_occupation_count',
+                           combined_count_suffix='_user_occupation_count',
+                           combined_prob_suffix='_user_occupation_prob')
+
+    return data
+
+# Combine user feature with shop feature.
+# user_id:
+#           - shop features
+# user_gender_id:
+#           - shop_features
+# user_age_level:
+#           - shop_features
+# user_occupation_id:
+#           - shop_features
+#
+def user_shop_feature_combine(data):
+    shop_features = ['shop_id', 'shop_review_num_level', 'shop_star_level']
+    # user_id combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='user_id',
+                           feature_list=shop_features,
+                           x_count_name='user_count',
+                           combined_count_suffix='_user_count',
+                           combined_prob_suffix='_user_prob')
+
+    # user_gender_id combine with shop features.
+    data = feature_combine(data=data,
+                           feature_x='user_gender_id',
+                           feature_list=shop_features,
+                           x_count_name='user_gender_count',
+                           combined_count_suffix='_user_gender_count',
+                           combined_prob_suffix='_user_gender_prob')
+
+    # user_age_level combine with shop features.
+    data = feature_combine(data=data,
+                           feature_x='user_age_level',
+                           feature_list=shop_features,
+                           x_count_name='user_age_count',
+                           combined_count_suffix='_user_age_count',
+                           combined_prob_suffix='_user_age_prob')
+
+    # user_occupation_id combine with shop features.
+    data = feature_combine(data=data,
+                           feature_x='user_occupation_id',
+                           feature_list=shop_features,
+                           x_count_name='user_occupation_count',
+                           combined_count_suffix='_user_occupation_count',
+                           combined_prob_suffix='_user_occupation_prob')
+
+    return data
+
+# Combine shop feature with item feature.
+# shop_id:
+#           - item features
+# shop_review_num_level:
+#           - item_features
+#
+def shop_item_feature_combine(data):
+    item_features = ['item_id', 'item_brand_id', 'item_city_id', 'item_price_level',
+                     'item_sales_level', 'item_collected_level', 'item_pv_level']
+    # shop_id combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='shop_id',
+                           feature_list=item_features,
+                           x_count_name='shop_count',
+                           combined_count_suffix='_shop_count',
+                           combined_prob_suffix='_shop_prob')
+    # shop_review_num_level combine with item features.
+    data = feature_combine(data=data,
+                           feature_x='shop_review_num_level',
+                           feature_list=item_features,
+                           x_count_name='shop_review_num_count',
+                           combined_count_suffix='_shop_review_num_count',
+                           combined_prob_suffix='_shop_review_num_prob')
+
+    return data
 
 
 
