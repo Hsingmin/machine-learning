@@ -11,7 +11,6 @@
 # dataset.py -- Transform sample features and fields .
 #
 import warnings
-import lightbgm as lgb
 import time
 import numpy as np
 import pandas as pd
@@ -130,7 +129,7 @@ def feature_process(data):
     data['len_item_property'] = data['item_property_list'].map(lambda x: len(str(x).split(';')))
 
     for i in range(1, 3):
-        data['item_category_list' + str(i)] = le.fit_tranform(data['item_category_list'].map(
+        data['item_category_list' + str(i)] = le.fit_transform(data['item_category_list'].map(
             lambda x: str(str(x).split(';')[i]) if len(str(x).split(';')) > i else ''))
 
     for i in range(10):
@@ -141,7 +140,7 @@ def feature_process(data):
 
     # User field label encode.
     for col in ['user_id']:
-        data[col] = le.fit_tranform(data[col])
+        data[col] = le.fit_transform(data[col])
     data['gender0'] = data['user_gender_id'].apply(lambda x: 1 if x==-1 else 2)
     data['age0'] = data['user_age_level'].apply(lambda x: 1 if x==1000|x==1001|x==-1 else 2)
     data['occupation0'] = data['user_occupation_id'].apply(user_occupation_encode)
@@ -206,8 +205,8 @@ def slide_count(data):
         df1 = data[data['day'] == d-1]
         df2 = data[data['day'] == d]
         user_cnt = df1.groupby(by='user_id').count()['instance_id'].to_dict()
-        item_cnt = df1.groupby(by='item_id').count()['item_id'].to_dict()
-        shop_cnt = df1.groupby(by='shop_id').count()['shop_id'].to_dict()
+        item_cnt = df1.groupby(by='item_id').count()['instance_id'].to_dict()
+        shop_cnt = df1.groupby(by='shop_id').count()['instance_id'].to_dict()
         df2['user_cnt1'] = df2['user_id'].apply(lambda x: user_cnt.get(x, 0))
         df2['item_cnt1'] = df2['item_id'].apply(lambda x: item_cnt.get(x, 0))
         df2['shop_cnt1'] = df2['shop_id'].apply(lambda x: shop_cnt.get(x, 0))
@@ -223,8 +222,8 @@ def slide_count(data):
         df1 = data[data['day'] < d]
         df2 = data[data['day'] == d]
         user_cnt = df1.groupby(by='user_id').count()['instance_id'].to_dict()
-        item_cnt = df1.groupby(by='item_id').count()['item_id'].to_dict()
-        shop_cnt = df1.groupby(by='shop_id').count()['shop_id'].to_dict()
+        item_cnt = df1.groupby(by='item_id').count()['instance_id'].to_dict()
+        shop_cnt = df1.groupby(by='shop_id').count()['instance_id'].to_dict()
         df2['user_cntx'] = df2['user_id'].apply(lambda x: user_cnt.get(x, 0))
         df2['item_cntx'] = df2['item_id'].apply(lambda x: item_cnt.get(x, 0))
         df2['shop_cntx'] = df2['shop_id'].apply(lambda x: shop_cnt.get(x, 0))
@@ -239,7 +238,7 @@ def slide_count(data):
     return data
 
 # Features combine.
-def feature_combine(data):
+def feature_dtype_convert(data):
     for col in ['user_gender_id', 'user_age_level', 'user_occupation_id', 'user_star_level']:
         data[col] = data[col].apply(lambda x: 0 if x==-1 else 1)
 
@@ -287,10 +286,10 @@ def feature_combine(data):
 #       combined_prob_suffix        -- column name suffix in which combined feature probability stored,
 #                                      column name is concated with col and suffix into one string like
 #                                      'user_gender_id_user_prob' etc.
-def feature_combine(data=data, feature_x=feature_x,
-                    feature_list=feature_list, x_count_name=x_count_name,
-                    combined_count_suffix=combined_count_suffix,
-                    combined_prob_suffix=combined_prob_suffix):
+def feature_combine(data=None, feature_x=None,
+                    feature_list=None, x_count_name=None,
+                    combined_count_suffix=None,
+                    combined_prob_suffix=None):
     x_count = data.groupby(by=[feature_x], as_index=False)['instance_id'].agg({x_count_name: 'count'})
     data = pd.merge(data, x_count, on=[feature_x], how='left')
     for col in feature_list:

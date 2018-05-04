@@ -20,20 +20,33 @@ from sklearn.model_selection import train_test_split
 
 warnings.filterwarnings("ignore")
 
-non_critical_features = ['is_trade', 'item_category_list', 'item_property_list',
+# Classifier or predictor based on LightGBM.
+# params:
+#       train        -- training dataset
+#       validate     -- validation dataset
+#       test         -- test dataset
+#       is_train     -- model for training or predicting
+#       best_iter    -- model with minimum log_loss on validation dataset
+#                       default as 20000 when training 
+# returns:
+#       best_iter    -- training model with minimum log_loss on best_iter
+#       None         -- save result into csv file
+#
+def lgbmc(train=None, validate=None, test=None, is_train=True, iteration=20000):
+
+    non_critical_features = ['is_trade', 'item_category_list', 'item_property_list',
                              'predict_category_property', 'instance_id', 'context_id',
                              'realtime', 'context_timestamp']
-
-# Classifier and predictor based on LightGBM. 
-def lgbmc(train, validate):
-
     col = [c for c in train if c not in non_critical_features]
     X_train = train[col]
     y_train = train['is_trade'].values
-    X_validate = validate[col]
-    y_validate = validate['is_trade'].values
+    if is_train == True:
+        X_validate = validate[col]
+        y_validate = validate['is_trade'].values
 
-    print("Training lgbmc Model Start  ........................ ")
+        print("Training lgbmc Model Start  ........................ ")
+    if is_train == False:
+        print("Lgbmc Model Predict for Test Dataset ................")
 
     # params:
     #       boosting_type           -- algorithm for gradient boosting model
@@ -53,7 +66,7 @@ def lgbmc(train, validate):
                                          colsample_bytree=0.8,
                                          subsample=0.9,
                                          min_sum_hessian_in_leaf=100,
-                                         n_estimators=20000)
+                                         n_estimators=iteration)
     # params:
     #       X_train                -- input feature matrix
     #       y_train                -- input label matrix
@@ -62,10 +75,16 @@ def lgbmc(train, validate):
     # returns:
     #       self object
     #
-    lgbm_model = lgbm_classifier.fit(X_train, y_train, eval_set=[(X_validate, y_validate)], early_stopping_rounds=200)
-    # class attribute best_iteration_ is the best iteration of fitted model 
-    # when early_stopping_rounds parameter specified.   
-    best_iter = lgbm_model.best_iteration_
+    if is_train == True:
+        lgbm_model = lgbm_classifier.fit(X_train, y_train,
+                                         eval_set=[(X_validate, y_validate)],
+                                         early_stopping_rounds=200)
+        # class attribute best_iteration_ is the best iteration of fitted model 
+        # when early_stopping_rounds parameter specified.   
+        best_iter = lgbm_model.best_iteration_
+    else:
+        lgbm_model = lgbm_classifier.fit(X_train, y_train)
+
     # Array including all numerical features.
     predictors = [c for c in X_train.columns]
     # Array including feature importances. 
@@ -80,17 +99,18 @@ def lgbmc(train, validate):
     # returns:
     #       predicted_probability -- predicted probability for each class for each sample
     #                                in shape of [n_samples, n_classes]
-    predicted_prob = lgbm_model.predict_proba(validate[col])[:, 1]
-    validate['predict'] = predicted_prob
-    validate['index'] = range(len(validate))
-    print("Evaluate Model : ")
-    print('Logistic Loss = ', log_loss(validate['is_trade'], validate['predict']))
-    print("The Best Iteration is : ", best_iter)
-
-    return best_iter
-
-
-
-
+    if is_train == True:
+        predicted_prob = lgbm_model.predict_proba(validate[col])[:, 1]
+        validate['predict'] = predicted_prob
+        validate['index'] = range(len(validate))
+        print("Evaluate Model : ")
+        print('Logistic Loss = ', log_loss(validate['is_trade'], validate['predict']))
+        print("The Best Iteration is : ", best_iter)
+        return best_iter
+    else:
+        predicted_prob = lgbm_model.predict_proba(test[col])[:, 1]
+        test['predicted_score'] = predicted_prob
+        res = test[['instance_id', 'predicted_score']]
+        return res
 
 
