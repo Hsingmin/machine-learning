@@ -64,17 +64,26 @@ def ffm_run():
     return 0
 
 if __name__ == '__main__':
+
+    # Prepared dataset have been already stored into csv file.
     # dataset = dataset_prepare()
     # dataset.to_csv('./to/dataset.txt', sep=" ", index=False)
 
-    dataset = pd.read_csv('./to/dataset.txt', sep="\s+")
+    dataset = pd.read_csv(os.path.join(DATASET_DIR, 'dataset.txt'), sep="\s+")
     """
     non_critical_features = ['is_trade', 'item_category_list', 'item_property_list',
                              'predict_category_property', 'instance_id', 'context_id',
                              'realtime', 'context_timestamp']
     """
+    str_fields = ['item_brand_id', 'item_price_level', 'item_sales_level', 'star0']
+    for sf in str_fields:
+        try:
+            dataset[sf] = dataset[sf].astype('int64')
+        except Exception as e:
+            dataset[sf].to_csv('./to/' + sf + '.csv', sep=" ", index=False)
+            print(e)
+            pass
     col = [c for c in dataset]
-
     for c in col:
         print('Field %s with dtype = %s' %(c, str(dataset[c].dtype)))
 
