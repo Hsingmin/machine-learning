@@ -29,10 +29,7 @@ TEST_DATASET_RAW = 'round1_ijcai_18_test_a_20180301.txt'
 # TRAIN_DATASET_CSV = 'ijcai_18_train_dataset.csv'
 # TEST_DATASET_CSV = 'ijcai_18_test_dataset.csv'
 
-def dataset_prepare():
-    train = pd.read_csv(os.path.join(DATASET_DIR, TRAIN_DATASET_RAW), sep="\s+")
-    test = pd.read_csv(os.path.join(DATASET_DIR, TEST_DATASET_RAW), sep="\s+")
-    dataset = pd.concat([train, test])
+def dataset_prepare(dataset):
     dataset = dataset.drop_duplicates(subset='instance_id')
     dataset = dt.feature_process(dataset)
     dataset = dt.time_hour_encode(dataset)
@@ -65,31 +62,39 @@ def ffm_run():
 
 if __name__ == '__main__':
 
+    """
     # Prepared dataset have been already stored into csv file.
-    # dataset = dataset_prepare()
-    # dataset.to_csv('./to/dataset.txt', sep=" ", index=False)
+    train = pd.read_csv(os.path.join(DATASET_DIR, TRAIN_DATASET_RAW), sep="\s+")
+    train = dataset_prepare(train)
+    test = pd.read_csv(os.path.join(DATASET_DIR, TEST_DATASET_RAW), sep="\s+")
+    test = dataset_prepare(test)
+    # dataset = pd.concat([train, test])
+    train = train.drop_duplicates(subset='instance_id')
+    train.to_csv('./to/train.txt', sep=" ", index=False)
+    test.to_csv('./to/test.txt', sep=" ", index=False)
 
-    dataset = pd.read_csv(os.path.join(DATASET_DIR, 'dataset.txt'), sep="\s+")
+    # dataset = pd.read_csv(os.path.join(DATASET_DIR, 'dataset.txt'), sep="\s+")
+    train = pd.read_csv('./to/train.txt', sep="\s+")
+    # Move train['is_trade'] to the last column
+    trade_series = train.pop('is_trade')
+    train.insert(len(train.columns), 'is_trade', trade_series)
+    test = pd.read_csv('./to/test.txt', sep="\s+")
+    # train_cols = [c for c in train]
+    # test_cols = [c for c in test]
+    dataset = pd.concat([train, test])
+
+    lgbmc_run(dataset)
     """
-    non_critical_features = ['is_trade', 'item_category_list', 'item_property_list',
-                             'predict_category_property', 'instance_id', 'context_id',
-                             'realtime', 'context_timestamp']
     """
-    str_fields = ['item_brand_id', 'item_price_level', 'item_sales_level', 'star0']
-    for sf in str_fields:
-        try:
-            dataset[sf] = dataset[sf].astype('int64')
-        except Exception as e:
-            dataset[sf].to_csv('./to/' + sf + '.csv', sep=" ", index=False)
-            print(e)
-            pass
-    col = [c for c in dataset]
-    for c in col:
-        print('Field %s with dtype = %s' %(c, str(dataset[c].dtype)))
-
-    # lgbmc_run(dataset)
-
-
+    predicts = pd.read_csv('./to/predicts.txt', sep="\s+")
+    predicts['predicted_trade'] = predicts['predicted_score'].apply(
+            lambda x: 1 if x >= 0.85 else (0 if x <= 0.15 else x))
+    print(predicts[predicts['predicted_trade'] == 0])
+    """
+    train = pd.read_csv('./to/train.txt', sep="\s+")
+    test = train[train['is_trade'] == 1]
+    predicts = gc.lgbmc(train=train, test=test, is_train=False, iteration=429)
+    predicts.to_csv('./to/validate_predicts.txt', sep=" ", index=False)
 
 
 

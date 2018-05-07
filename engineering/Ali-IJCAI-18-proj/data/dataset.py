@@ -23,14 +23,14 @@ import csv
 warnings.filterwarnings("ignore")
 
 # Train slices store path
-DATASET_DIR = 'd:/engineering-data/Ali-IJCAI-18-data'
+# DATASET_DIR = 'd:/engineering-data/Ali-IJCAI-18-data'
 
-TRAIN_DATASET_RAW = 'round1_ijcai_18_train_20180301.txt'
+# TRAIN_DATASET_RAW = 'round1_ijcai_18_train_20180301.txt'
 
-TEST_DATASET_RAW = 'round1_ijcai_18_test_a_20180301.txt'
+# TEST_DATASET_RAW = 'round1_ijcai_18_test_a_20180301.txt'
 
-TRAIN_DATASET_CSV = 'ijcai_18_train_dataset.csv'
-TEST_DATASET_CSV = 'ijcai_18_test_dataset.csv'
+# TRAIN_DATASET_CSV = 'ijcai_18_train_dataset.csv'
+# TEST_DATASET_CSV = 'ijcai_18_test_dataset.csv'
 
 # Convert Unix time stamps into local date. 
 def ustamps_to_time(value):
