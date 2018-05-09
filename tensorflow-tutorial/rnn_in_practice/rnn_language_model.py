@@ -56,7 +56,7 @@ class PTBModel(object):
 		if is_training:
 			lstm_cell = tf.nn.rnn_cell.DropoutWrapper(
 					lstm_cell, output_keep_prob=KEEP_PROB)
-		
+
 		cell = tf.nn.rnn_cell.MultiRNNCell([lstm_cell] * NUM_LAYERS, state_is_tuple=True)
 
 		# Initialize original state to zeros vector .
@@ -67,7 +67,7 @@ class PTBModel(object):
 		# Words counts totally to VOCAB_SIZE in dictionary ,
 		# word vector dimension=HIDDEN_SIZE , then variable embedding
 		# dimension=VOCAB_SIZE * HIDDEN_SIZE .
-		
+
 		embedding = tf.get_variable("embedding", [VOCAB_SIZE, HIDDEN_SIZE])
 
 		# Converse original batch_size * num_steps words' id into word vector.
@@ -81,13 +81,13 @@ class PTBModel(object):
 		# Use dropout only in training process .
 		if is_training:
 			inputs = tf.nn.dropout(inputs, KEEP_PROB)
-		
+
 		# Define outputs array to collect LSTM output in different moment ,
 		# and get the final output through a full-connected network .
 		outputs = []
 		# Store LSTM state information of different batch , and initialize to zeros .
 		state = self.initial_state
-		
+
 		with tf.variable_scope("RNN", reuse=tf.AUTO_REUSE):
 			for time_step in range(num_steps):
 				if time_step > 0:
@@ -101,7 +101,7 @@ class PTBModel(object):
 		# In tensorflow 1.0 or higher version , change tf.concat(1, outputs)
 		# to tf.concat(outputs, 1) .
 		output = tf.reshape(tf.concat(outputs, 1), [-1, HIDDEN_SIZE])
-		
+
 		# Final full-connected layer to get the predication value ,
 		# that is an array length=VOCAB_SIZE , which turned to be a
 		# probability vector through softmax layer .
@@ -127,7 +127,7 @@ class PTBModel(object):
 		# Calculate loss of every batch .
 		self.cost = tf.reduce_sum(loss) / batch_size
 		self.final_state = state
-		
+
 		if not is_training:
 			return
 		trainable_variables = tf.trainable_variables()
@@ -174,39 +174,37 @@ def run_epoch(session, model, data, train_op, output_log):
 # in which progress the arguments adjusted . 
 def main(argv=None):
 	# Get raw training dataset .
-	train_data, validate_data, test_data, _ = reader.ptb_raw_data(DATA_PATH) 
-	
+	train_data, validate_data, test_data, _ = reader.ptb_raw_data(DATA_PATH)
+
 	# Define initializer for model .
 	initializer = tf.random_uniform_initializer(-0.05, 0.05)
-	
+
 	# Define deepRNN model for training .
-	with tf.variable_scope("language_model", 
+	with tf.variable_scope("language_model",
 			reuse=tf.AUTO_REUSE, initializer=initializer):
 		train_model = PTBModel(True, TRAIN_BATCH_SIZE, TRAIN_NUM_STEP)
 
 	# Define deepRNN model for testing .
-	with tf.variable_scope("language_model", 
+	with tf.variable_scope("language_model",
 			reuse=tf.AUTO_REUSE, initializer=initializer):
 		eval_model = PTBModel(False, EVAL_BATCH_SIZE, EVAL_NUM_STEP)
-	
+
 	with tf.Session() as session:
 		session.run((tf.global_variables_initializer(),
-			  tf.local_variables_initializer()))
+            tf.local_variables_initializer()))
 
 		# Train model with training datasets
 		for i in range(NUM_EPOCH):
 			print("In iteration: %d " % (i + 1))
 			# Train deepRNN model on whole dataset .
-			run_epoch(session, train_model, 
+			run_epoch(session, train_model,
 					train_data, train_model.train_op, True)
-			
+
 			# Validate model with validate dataset .
 			validate_perplexity = run_epoch(session, eval_model,
 					validate_data, tf.no_op(), False)
-			print("Epoch: %d Validation Perplexity %.3f" % 
-					(i + 1, validate_perplexity))
+			print("Epoch: %d Validation Perplexity %.3f" %(i + 1, validate_perplexity))
 
-		
 		# Evaluate model performance on test dataset .
 		test_perplexity = run_epoch(session, eval_model, test_data, tf.no_op(), False)
 		print("Test: Perplexity: %.3f " % test_perplexity)

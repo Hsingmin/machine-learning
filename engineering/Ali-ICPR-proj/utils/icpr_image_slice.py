@@ -46,11 +46,9 @@ VALIDATE_SLICES_DIR = 'd:/engineering-data/Ali-ICPR-data/validate_slice/'
 def create_image_list():
 	image_list = []
 	bbox_list = []
-	
 	for rootdir, subdirs, filenames in os.walk(TRAIN_IMAGE_DIR):
 		for filename in filenames:
 			image_list.append(os.path.join(rootdir, filename))
-	
 	for rootdir, subdirs, filenames in os.walk(TRAIN_BBOX_DIR):
 		for filename in filenames:
 			bbox_list.append(os.path.join(rootdir, filename))
@@ -80,13 +78,12 @@ def get_single_image_bboxes(bbox_dir):
 	'''
 	bboxes = []
 	for bbox in bbox_list:
-		bboxes.append([int(float(bbox[1])), int(float(bbox[0])), 
+		bboxes.append([int(float(bbox[1])), int(float(bbox[0])),
 			int(float(bbox[5])), int(float(bbox[4]))])
-	
+
 	return bboxes, labels
 
 def is_bbox_invalid(sess, width, height, bbox):
-	
 	# print("current image width = %d, height = %d" %(width,height))
 	if bbox[2]-bbox[0] < 5 or bbox[3]-bbox[1] < 5:
 		return True
@@ -118,7 +115,6 @@ def get_soft_margin(begin, size, width, height):
 	if size[1]+10 < height:
 		size[1] = size[1]+10
 	return begin, size
-	
 
 # Get single image slice
 # arguments:
@@ -138,7 +134,7 @@ def get_single_image_slice(sess, image, bboxes, labels):
 			width = len(sized_image[0])
 			if is_label_invalid(label) or is_bbox_invalid(sess, width, height, bbox):
 				continue
-		
+
 			path = TRAIN_SLICES_DIR + label + ".png"
 			begin, size = get_soft_margin([bbox[0], bbox[1], 0], [bbox[2]-bbox[0], bbox[3]-bbox[1], -1], width, height)
 			sliced_image = tf.slice(image, begin, size)
@@ -171,34 +167,5 @@ def main(argv=None):
 
 if __name__ == '__main__':
 	main(argv=None)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 

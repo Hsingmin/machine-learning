@@ -45,9 +45,10 @@ def inference(input_tensor, train, regularizer):
 	with tf.variable_scope('layer1-conv1'):
 		# Convolutional filter size = 5*5*64 .
 		conv1_weights = tf.get_variable("weight", [CONV1_SIZE, CONV1_SIZE,
-							   NUM_CHANNELS, CONV1_DEEP],
-						initializer=tf.truncated_normal_initializer(stddev=0.1))
-		conv1_biases = tf.get_variable("bias", [CONV1_DEEP], initializer=tf.constant_initializer(0.0))
+            NUM_CHANNELS, CONV1_DEEP],
+            initializer=tf.truncated_normal_initializer(stddev=0.1))
+		conv1_biases = tf.get_variable("bias", [CONV1_DEEP],
+                initializer=tf.constant_initializer(0.0))
 
 		# Filter with size=5*5 , deepth=32 , stride=1 with zero-padding .
 		conv1 = tf.nn.conv2d(input_tensor, conv1_weights, strides=[1,1,1,1], padding='SAME')
@@ -66,28 +67,27 @@ def inference(input_tensor, train, regularizer):
 	# and 14*14*64 matrix output .
 	with tf.variable_scope('layer3-conv2'):
 		conv2_weights = tf.get_variable("weight", [CONV2_SIZE, CONV2_SIZE,
-							   CONV1_DEEP, CONV2_DEEP],
-						initializer=tf.truncated_normal_initializer(stddev=0.1))
-		conv2_biases = tf.get_variable("bias", [CONV2_DEEP], initializer=tf.constant_initializer(0.0))
+            CONV1_DEEP, CONV2_DEEP],
+            initializer=tf.truncated_normal_initializer(stddev=0.1))
+		conv2_biases = tf.get_variable("bias", [CONV2_DEEP],
+                initializer=tf.constant_initializer(0.0))
 
 		# Filter with size=5*5, deepth=64 , stride=1 with zero-padding .
 		conv2 = tf.nn.conv2d(pool1, conv2_weights, strides=[1, 1, 1, 1], padding='SAME')
 		relu2 = tf.nn.relu(tf.nn.bias_add(conv2, conv2_biases))
 
-	
 	# Declare pool layer4 and forward-propagation , with 14*14*64 input and 7*7*64 output .
 	with tf.name_scope('layer4-pool2'):
 		pool2 = tf.nn.max_pool(relu2, ksize=[1, 2, 2, 1],
 				strides=[1, 2, 2, 1], padding='SAME')
 
-	
 		# Transform pool2 output 7*7*64 matrix into vector as input of full-connected layer5 
 		# using API get_shape() to get dimension rather than mannual computing . 
 		#
 		# Every layer of network inputs a batch of data , hence the dimension information
 		# here is for a batch . 
 		pool_shape = pool2.get_shape().as_list()
-	
+
 		# Calculating the length of transforming vector , and pool_shape[0] is the number of data in one batch .
 		nodes = pool_shape[1]*pool_shape[2]*pool_shape[3]
 
@@ -108,8 +108,8 @@ def inference(input_tensor, train, regularizer):
 		fc1_biases = tf.get_variable("bias", [FC_SIZE],
 				initializer=tf.constant_initializer(0.1))
 		fc1 = tf.nn.relu(tf.matmul(reshaped, fc1_weights) + fc1_biases)
-		
-		# Add dropout in full-connected layer when training .
+
+        # Add dropout in full-connected layer when training .
 		if train:
 			fc1 = tf.nn.dropout(fc1, 0.5)
 
@@ -123,40 +123,11 @@ def inference(input_tensor, train, regularizer):
 			tf.add_to_collection("losses", regularizer(fc2_weights))
 		fc2_biases = tf.get_variable("bias", [NUM_LABELS],
 				initializer=tf.constant_initializer(0.1))
-		
+
 		logit = tf.matmul(fc1, fc2_weights) + fc2_biases
 
 	# Get output of full-connected layer6
 	return logit
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

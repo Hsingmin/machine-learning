@@ -33,7 +33,7 @@ def train(mnist):
 
 	# Regularizer defination .
 	regularizer = tf.contrib.layers.l2_regularizer(REGULARIZATION_RATE)
-	
+
 	# Forward propagation by calling conv_mnist_inference.inference()
 	y = conv_mnist_inference.inference(x, True, regularizer)
 	# Record global training steps .
@@ -57,7 +57,7 @@ def train(mnist):
 							mnist.train.num_examples/BATCH_SIZE,
 							LEARNING_RATE_DECAY, staircase=True)
 	train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss, global_step=global_step)
-	
+
 	# Update both variables and the moving-averages .
 	# tensorflow.no_op() is a operation placeholder .
 	with tf.control_dependencies([train_step, variables_averages_op]):
@@ -65,20 +65,20 @@ def train(mnist):
 
 	# Initialize persistence class .
 	saver = tf.train.Saver()
-	
+
 	with tf.Session() as sess:
 		tf.global_variables_initializer().run()
 
 		# Raw training process , no validating and testing .
 		for i in range(TRAINING_STEPS):
 			xs, ys = mnist.train.next_batch(BATCH_SIZE)
-			
+
 			# Reshape xs to be a 4-dimension matrix .
 			reshaped_xs = np.reshape(xs, (BATCH_SIZE,
-						      conv_mnist_inference.IMAGE_SIZE,
-						      conv_mnist_inference.IMAGE_SIZE,
-						      conv_mnist_inference.NUM_CHANNELS))
-			
+                conv_mnist_inference.IMAGE_SIZE,
+                conv_mnist_inference.IMAGE_SIZE,
+                conv_mnist_inference.NUM_CHANNELS))
+
 			_, loss_value, step = sess.run([train_op, loss, global_step],
 							feed_dict={x: reshaped_xs, y_: ys})
 
@@ -95,7 +95,6 @@ def main(argv=None):
 
 if __name__ == '__main__':
 	tf.app.run()
-		
 
 
 

@@ -71,14 +71,12 @@ def create_image_lists(testing_percentage, validation_percentage):
 	#           './data/flower_photos/roses',
 	#           './data/flower_photos/sunflowers',
 	#           './data/flower_photos/tulips']
-	
 	# The first element in list is root directory .
 	is_root_dir = True
 	for sub_dir in sub_dirs:
 		if is_root_dir:
 			is_root_dir = False
 			continue
-		
 		# Get all valid images in current directory .
 		extensions = ['jpg', 'jpeg', 'JPG', 'JPEG']
 		file_list = []
@@ -96,7 +94,6 @@ def create_image_lists(testing_percentage, validation_percentage):
 		training_images = []
 		testing_images = []
 		validation_images = []
-		
 		for file_name in file_list:
 			# Get clean file name without path as prefix .
 			base_name = os.path.basename(file_name)
@@ -109,10 +106,10 @@ def create_image_lists(testing_percentage, validation_percentage):
 				training_images.append(base_name)
 		# Place current category data into dictionary result 
 		# label_name as the key of list image_lists . 
-		result[label_name] = {'dir': dir_name,\
-				      'training': training_images,\
-				      'testing': testing_images,\
-				      'validation': validation_images}
+		result[label_name] = {'dir': dir_name,
+                'training': training_images,
+                'testing': testing_images,
+                'validation': validation_images}
 	return result
 
 # Get image directory through label_name , category , index arguments .
@@ -125,7 +122,7 @@ def create_image_lists(testing_percentage, validation_percentage):
 def get_image_path(image_lists, image_dir, label_name, index, category):
 	# Get all image information in given class label .
 	label_lists = image_lists[label_name]
-	
+
 	# Get all image information in given divided category .
 	category_list = label_lists[category]
 
@@ -153,8 +150,8 @@ def run_bottleneck_on_image(sess, image_data, image_data_tensor, bottleneck_tens
 # Get the feature vector output by Inception-v3 model .
 # 
 # Search for the feature vector firstly , if not exists then create it .
-def get_or_create_bottleneck(sess, image_lists, label_name, index, \
-		category, jpeg_data_tensor, bottleneck_tensor): 
+def get_or_create_bottleneck(sess, image_lists, label_name, index,
+		category, jpeg_data_tensor, bottleneck_tensor):
 	# Get feature vector path corresponding to the image .
 	label_lists = image_lists[label_name]
 	sub_dir = label_lists['dir']
@@ -165,7 +162,7 @@ def get_or_create_bottleneck(sess, image_lists, label_name, index, \
 		os.makedirs(sub_dir_path)
 	# Actually is a txt file in CACHE_DIR path .
 	bottleneck_path = get_bottleneck_path(image_lists, label_name, index, category)
-	
+
 	# If the feature vector file not exists , 
 	# then compute through Inception-v3 model and save to file .
 	if not os.path.exists(bottleneck_path):
@@ -191,7 +188,7 @@ def get_or_create_bottleneck(sess, image_lists, label_name, index, \
 	return bottleneck_values
 
 # Pick a batch of images to be training dataset .
-def get_random_cached_bottlenecks(sess, n_classes, image_lists, how_many,\
+def get_random_cached_bottlenecks(sess, n_classes, image_lists, how_many,
 		category, jpeg_data_tensor, bottleneck_tensor):
 	bottlenecks = []
 	ground_truths = []
@@ -202,9 +199,9 @@ def get_random_cached_bottlenecks(sess, n_classes, image_lists, how_many,\
 		label_name = list(image_lists.keys())[label_index]
 		# Produce image_index smaller than 65536 randomly .
 		image_index = random.randrange(65536)
-		
+
 		# Get image feature vector through Inception-v3 model .
-		bottleneck = get_or_create_bottleneck(sess, image_lists, label_name,\
+		bottleneck = get_or_create_bottleneck(sess, image_lists, label_name,
 				image_index, category, jpeg_data_tensor, bottleneck_tensor)
 
 		# Keep image label information in ground_truth ,
@@ -221,7 +218,7 @@ def get_test_bottlenecks(sess, image_lists, n_classes, jpeg_data_tensor, bottlen
 	bottlenecks = []
 	ground_truths = []
 	label_name_list = list(image_lists.keys())
-	
+
 	# Enumerate all class labels and testing images .
 	#
 	# label_index, label_name in enumerate(label_name_list):
@@ -234,14 +231,14 @@ def get_test_bottlenecks(sess, image_lists, n_classes, jpeg_data_tensor, bottlen
 		category = 'testing'
 		# Get image index and image name (unused) .
 		for index, unused_base_name in enumerate(image_lists[label_name][category]):
-			bottleneck = get_or_create_bottleneck(\
-					sess, image_lists, label_name, index, category,\
+			bottleneck = get_or_create_bottleneck(
+					sess, image_lists, label_name, index, category,
 					jpeg_data_tensor, bottleneck_tensor)
 			ground_truth = np.zeros(n_classes, dtype=np.float32)
 			ground_truth[label_index] = 1.0
 			bottlenecks.append(bottleneck)
 			ground_truths.append(ground_truth)
-	
+
 	return bottlenecks, ground_truths
 
 
@@ -267,13 +264,13 @@ def main(argv=None):
 	#                     name=None,
 	#                     op_dict=None)
 
-	bottleneck_tensor, jpeg_data_tensor = tf.import_graph_def(graph_def,\
+	bottleneck_tensor, jpeg_data_tensor = tf.import_graph_def(graph_def,
 			return_elements=[BOTTLENECK_TENSOR_NAME, JPEG_DATA_TENSOR_NAME])
-	
+
 	# Define a new input for network which also as the feature matrix 
 	# produced by Inception-v3 model when image data forward propagate
 	# to bottleneck layer .
-	bottleneck_input = tf.placeholder(tf.float32, [None, BOTTLENECK_TENSOR_SIZE],\
+	bottleneck_input = tf.placeholder(tf.float32, [None, BOTTLENECK_TENSOR_SIZE],
 			name='BottleneckInputPlaceholder')
 
 	# Define a new input for ground truth of image label .
@@ -285,14 +282,14 @@ def main(argv=None):
 	# For feature vector extracted by Inception-v3 model more easily to classify ,
 	# complex network structure like LeNet5 no more needed .
 	with tf.name_scope('final_training_ops'):
-		weights = tf.Variable(tf.truncated_normal(\
+		weights = tf.Variable(tf.truncated_normal(
 				[BOTTLENECK_TENSOR_SIZE, n_classes], stddev=0.001))
 		biases = tf.Variable(tf.zeros([n_classes]))
 		logits = tf.matmul(bottleneck_input, weights) + biases
 		final_tensor = tf.nn.softmax(logits)
 
 	# Cross-entropy Loss function .
-	cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits,\
+	cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=logits,
 							labels=ground_truth_input)
 	cross_entropy_mean = tf.reduce_mean(cross_entropy)
 	# Last full-connected layer training .
@@ -300,8 +297,8 @@ def main(argv=None):
 
 	# Calculate classification accuracy .
 	with tf.name_scope('evaluation'):
-		correct_predication = tf.equal(tf.argmax(final_tensor, 1),\
-					       tf.argmax(ground_truth_input, 1))
+		correct_predication = tf.equal(tf.argmax(final_tensor, 1),
+                tf.argmax(ground_truth_input, 1))
 		evaluation_step = tf.reduce_mean(tf.cast(correct_predication, tf.float32))
 
 	with tf.Session() as sess:
@@ -314,33 +311,33 @@ def main(argv=None):
 			# and bottleneck_tensor , then output bottleneck_values and ground_truths 
 			# corresponding the input image  as the last full-connected network 
 			# training dataset.
-			train_bottlenecks, train_ground_truths = \
-					get_random_cached_bottlenecks(\
-					sess, n_classes, image_lists, BATCH,\
+			train_bottlenecks, train_ground_truths =
+					get_random_cached_bottlenecks(
+					sess, n_classes, image_lists, BATCH,
 					'training', jpeg_data_tensor, bottleneck_tensor)
-			
-			sess.run(train_step, feed_dict={bottleneck_input: train_bottlenecks,\
+
+			sess.run(train_step, feed_dict={bottleneck_input: train_bottlenecks,
 							ground_truth_input: train_ground_truths})
 
 			# Get accuracy on validation dataset .
 			if i % 100 == 0 or (i + 1) == STEPS:
 				# Get one batch of validation data (bottleneck_values and ground_truths)
 				# to calculate the model classify accuracy .
-				validation_bottlenecks, validation_ground_truths = \
-						get_random_cached_bottlenecks(\
-						sess, n_classes, image_lists, BATCH,\
+				validation_bottlenecks, validation_ground_truths =
+						get_random_cached_bottlenecks(
+						sess, n_classes, image_lists, BATCH,
 						'validation', jpeg_data_tensor, bottleneck_tensor)
 
-				validation_accuracy = sess.run(evaluation_step, \
+				validation_accuracy = sess.run(evaluation_step,
 						feed_dict={bottleneck_input: validation_bottlenecks,
-							   ground_truth_input: validation_ground_truths})
-				print('Step %d: Validation accuracy on random sampled %d examples = %.1f%%' \
+                            ground_truth_input: validation_ground_truths})
+				print('Step %d: Validation accuracy on random sampled %d examples = %.1f%%'
 						%(i, BATCH, validation_accuracy*100))
 
 		# Get accuracy on test dataset after the model training process finished .
-		test_bottlenecks, test_ground_truths = get_test_bottlenecks(\
+		test_bottlenecks, test_ground_truths = get_test_bottlenecks(
 				sess, image_lists, n_classes, jpeg_data_tensor, bottleneck_tensor)
-		test_accuracy = sess.run(evaluation_step, feed_dict={\
+		test_accuracy = sess.run(evaluation_step, feed_dict={
 				bottleneck_input: test_bottlenecks,
 				ground_truth_input: test_ground_truths})
 
@@ -348,7 +345,6 @@ def main(argv=None):
 
 if __name__ == '__main__':
 	tf.app.run()
-			
 
 
 

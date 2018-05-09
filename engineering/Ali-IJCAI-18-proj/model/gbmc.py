@@ -40,6 +40,7 @@ def lgbmc(train=None, validate=None, test=None, is_train=True, iteration=20000):
     col = [c for c in train if c not in non_critical_features]
     X_train = train[col]
     y_train = train['is_trade'].values
+    # Produce validate dataset for model training process
     if is_train == True:
         X_validate = validate[col]
         y_validate = validate['is_trade'].values
@@ -63,6 +64,7 @@ def lgbmc(train=None, validate=None, test=None, is_train=True, iteration=20000):
                                          num_leaves=35,
                                          max_depth=8,
                                          learning_rate=0.03,
+                                         seed=2018,
                                          colsample_bytree=0.8,
                                          subsample=0.9,
                                          min_sum_hessian_in_leaf=100,
@@ -104,13 +106,19 @@ def lgbmc(train=None, validate=None, test=None, is_train=True, iteration=20000):
         validate['predict'] = predicted_prob
         validate['index'] = range(len(validate))
         print("Evaluate Model : ")
-        print('Logistic Loss = ', log_loss(validate['is_trade'], validate['predict']))
+        validate['log_loss'] = log_loss(validate['is_trade'], validate['predict'])
+        validate[['index', 'predict', 'log_loss']].to_csv('./to/train_validate_loss.txt', sep=" ", index=False)
+        print('Logistic Loss = ', validate['log_loss'])
         print("The Best Iteration is : ", best_iter)
         return best_iter
     else:
-        predicted_prob = lgbm_model.predict_proba(test[col])[:, 1]
-        test['predicted_score'] = predicted_prob
-        res = test[['instance_id', 'predicted_score']]
+        # predicted_prob = lgbm_model.predict_proba(test[col])[:, 1]
+        predicted_probability = lgbm_model.predict_proba(test[col])
+        test['is_trade_probability'] = predicted_probability[:, 1]
+        test['not_trade_probability'] = predicted_probability[:, 0]
+        # test['predicted_score'] = predicted_prob
+        # res = test[['instance_id', 'predicted_score']]
+        res = test[['instance_id', 'is_trade_probability', 'not_trade_probability']]
         return res
 
 
