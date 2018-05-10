@@ -12,11 +12,14 @@
 import os
 import numpy as np
 import tensorflow as tf
+from PIL import Image
 
 import sys
 sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
 import ocr.model as om
 
+TRUNCATED_WIDTH = 512
+TRUNCATED_LENGTH = 104
 characters = om.keys.alphabet[:]
 
 class Dataset(object):
@@ -29,10 +32,16 @@ class Dataset(object):
         self.train = []
 
     def split(self):
+        images = []
         img_list = []
         for rootdir, subdirs, filenames in os.walk(self.data_path):
             for filename in filenames:
-                img_list.append(os.path.join(rootdir, filename))
+                images.append(os.path.join(rootdir, filename))
+
+        for image in images:
+            img = Image.open(image)
+            if img.size[0] <= TRUNCATED_WIDTH:
+                img_list.append(image)
 
         for img in img_list:
             chance = np.random.randint(100)
@@ -51,13 +60,13 @@ class Dataset(object):
         return self.validation
 
 class AlignedBatch(object):
-    def __init__(self, height=32, width=256):
+    def __init__(self, height=32, width=TRUNCATED_WIDTH):
         self.height = height
         self.width = width
 
     def __call__(self, batch):
         aligned_batch = []
-        self.width = max(np.shape(sample)[1] for sample in batch)
+        # self.width = max(np.shape(sample)[1] for sample in batch)
         for sample in batch:
             padding = np.array([[0]*(self.width-np.shape(sample)[1])]*np.shape(sample)[0])
             padding_sample = np.concatenate((sample, padding), axis=1)
@@ -65,7 +74,7 @@ class AlignedBatch(object):
         return aligned_batch
 
 class AlignedOnehot(object):
-    def __init__(self, length=10, characters=characters):
+    def __init__(self, length=TRUNCATED_LENGTH, characters=characters):
         self.length = length
         self.characters = characters
 

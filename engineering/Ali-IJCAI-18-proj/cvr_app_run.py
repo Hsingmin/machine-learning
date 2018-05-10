@@ -37,7 +37,7 @@ def feature_encode_combine(dataset):
     dataset = dt.feature_process(dataset)
     dataset = dt.time_hour_encode(dataset)
     dataset = dt.split_shop_feature(dataset)
-    dataset = dt.slide_count(dataset)
+    # dataset = dt.date_mask(dataset)
     dataset = dt.feature_dtype_convert(dataset)
     dataset = dt.item_feature_internal_combine(dataset)
     dataset = dt.user_feature_internal_combine(dataset)
@@ -86,7 +86,7 @@ def lgbmc_run(train, test):
 
     train = train.loc[0: int(len(train)*0.8)]
     validate = train.loc[int(len(train)*0.8): len(train)]
-    best_iter = gc.lgbmc(train=train, validate=validate, is_train=True, iteration=20000)
+    best_iter = gc.lgbmc(train=train, validate=validate, is_train=True, iteration=50000)
 
     # Predict on test dataset
     predicts = gc.lgbmc(train=train, test=test, is_train=False, iteration=best_iter)
@@ -100,6 +100,7 @@ def ffm_run():
 
 if __name__ == '__main__':
 
+    """
     if not os.path.exists(os.path.join(DATASET_DIR, 'trainable_data.txt')):
         train = pd.read_csv(os.path.join(DATASET_DIR, TRAIN_DATASET_RAW), sep="\s+")
         train = feature_encode_combine(train)
@@ -108,6 +109,7 @@ if __name__ == '__main__':
     else:
         print("trainable_data already existed ......")
         train = pd.read_csv(os.path.join(DATASET_DIR, 'trainable_data.txt'), sep="\s+")
+        # train.to_csv(os.path.join(DATASET_DIR, 'trainable_data.csv'))
 
     if not os.path.exists(os.path.join(DATASET_DIR, 'predictable_data.txt')):
         test = pd.read_csv(os.path.join(DATASET_DIR, TEST_DATASET_RAW), sep="\s+")
@@ -116,17 +118,21 @@ if __name__ == '__main__':
     else:
         print("predictable_data already existed ......")
         test = pd.read_csv(os.path.join(DATASET_DIR, 'predictable_data.txt'), sep="\s+")
+        # test.to_csv(os.path.join(DATASET_DIR, 'predictable_data.csv'))
 
-    valid_dtype = ['int64', 'float64']
-    cols = [c for c in train]
-    for col in cols:
-        if str(train[col].dtype) not in valid_dtype:
-            train[col].to_csv('./to/' + col + '_train.csv', sep=" ", index=False)
+    best_iter = lgbmc_run(train, test)
+    print('Train Process end =============================== ')
+    print('The best iteration for GBDT = %d' %(best_iter))
+    """
 
-    # best_iter = lgbmc_run(train, test)
+    predict_result = pd.read_csv('./to/predict_result.txt', sep="\s+")
+    predict_positive = predict_result[predict_result['is_trade_probability'] >= 0.95]
+    predict_negative = predict_result[predict_result['not_trade_probability'] <= 0.40]
+    print('Predictable Samples Number = %d' %(len(predict_result)))
+    print('Positive Samples Number = %d' %(len(predict_positive)))
+    print('Negative Samples Number = %d' %(len(predict_negative)))
 
-
-
+    print('Predict CVR = %.3f' %(len(predict_positive)/len(predict_result)))
 
 
 

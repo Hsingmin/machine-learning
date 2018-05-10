@@ -18,7 +18,6 @@ sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
 import data.dataset as dd
 import ocr.model as om
 import codecs
-
 # Train-dataset directory .
 INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
 
@@ -35,7 +34,8 @@ LEARNING_RATE = 0.01
 STEPS = 4000
 
 characters = om.keys.alphabet[:]
-N_LEN = 10
+
+N_LEN = 104
 EPOCH = 10
 
 def load_dataset(category, path, validation_percentage, test_percentage):
@@ -86,7 +86,7 @@ def batch_loader(category=None):
         # print(image)
         X_batch.append(image)
 
-    aligned_batch = dd.AlignedBatch(alligned_height, 256)
+    aligned_batch = dd.AlignedBatch(alligned_height, 512)
     X_batch = np.array(aligned_batch(X_batch))
     # print(label_list)
     aligned_onehot = dd.AlignedOnehot(N_LEN, characters)
@@ -132,12 +132,13 @@ def main(argv=None):
                     path = './h5/model{}.h5'.format(loss)
                     basemodel.save(path)
         except Exception as e:
+            print(e)
             with codecs.open('log.txt', 'a', 'utf-8') as f:
                 f.write(str(e)+'\r\n')
             pass
 
 if __name__ == '__main__':
-	tf.app.run()
+	main(argv=None)
 
 
 
