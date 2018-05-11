@@ -63,10 +63,10 @@ if __name__ == '__main__':
     print('Max Length of Labels = %d' %(max(len(label) for label in label_list)))
 
     for i, label in enumerate(label_list):
-        if len(label) >= 20:
+        if len(label) >= 10 or width_list[i] >= 512:
             cnt += 1
             print('%s -- %d' %(label, width_list[i]))
-            print('Long label counts to = %d' %cnt)
+            print('Invalid samples counts to = %d' %cnt)
 
 
 

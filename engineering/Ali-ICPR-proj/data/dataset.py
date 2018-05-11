@@ -19,7 +19,7 @@ sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
 import ocr.model as om
 
 TRUNCATED_WIDTH = 512
-TRUNCATED_LENGTH = 104
+TRUNCATED_LENGTH = 10
 characters = om.keys.alphabet[:]
 
 class Dataset(object):
@@ -40,9 +40,11 @@ class Dataset(object):
 
         for image in images:
             img = Image.open(image)
-            if img.size[0] <= TRUNCATED_WIDTH:
+            label = os.path.basename(image).replace('.png', '')
+            if img.size[0] <= TRUNCATED_WIDTH and len(label) <= TRUNCATED_LENGTH:
                 img_list.append(image)
 
+        # img_list = images
         for img in img_list:
             chance = np.random.randint(100)
             if chance < self.test_percentage:
@@ -79,7 +81,7 @@ class AlignedOnehot(object):
         self.characters = characters
 
     def __call__(self, batch):
-        self.length = max(len(sample) for sample in batch)
+        # self.length = max(len(sample) for sample in batch)
         label = [np.zeros(self.length)]*len(batch)
 
         for j, sample in enumerate(batch):

@@ -35,7 +35,8 @@ STEPS = 4000
 
 characters = om.keys.alphabet[:]
 
-N_LEN = 104
+TRUNCATED_WIDTH = 512
+N_LEN = 10
 EPOCH = 10
 
 def load_dataset(category, path, validation_percentage, test_percentage):
@@ -86,7 +87,7 @@ def batch_loader(category=None):
         # print(image)
         X_batch.append(image)
 
-    aligned_batch = dd.AlignedBatch(alligned_height, 512)
+    aligned_batch = dd.AlignedBatch(alligned_height, TRUNCATED_WIDTH)
     X_batch = np.array(aligned_batch(X_batch))
     # print(label_list)
     aligned_onehot = dd.AlignedOnehot(N_LEN, characters)
@@ -115,7 +116,6 @@ def main(argv=None):
     #   labels = Input(name='the_labels', shape=[None,], dtype='float32')
     #   input_length = Input(name='input_length', shape=[1], dtype='int64')
     #   label_length = Input(name='label_length', shape=[1], dtype='int64')
-
     for s in range(STEPS):
         try:
             X_batch, y_batch = batch_loader(category='train')
@@ -136,6 +136,23 @@ def main(argv=None):
             with codecs.open('log.txt', 'a', 'utf-8') as f:
                 f.write(str(e)+'\r\n')
             pass
+
+    """
+    for s in range(STEPS):
+        X_batch, y_batch = batch_loader(category='train')
+        X, Y = input_allocate(X_batch, y_batch)
+        model.train_on_batch(X, Y)
+
+        if s % EPOCH == 0:
+            X_validation, y_validation = batch_loader(category='validation')
+            X, Y = input_allocate(X_validation, y_validation)
+            loss = model.evaluate(X, Y)
+            print('OCR model training: %d steps, with loss = %f' %(s, loss))
+            if loss < global_loss:
+                global_loss = loss
+                path = './h5/model{}.h5'.format(loss)
+                basemodel.save(path)
+    """
 
 if __name__ == '__main__':
 	main(argv=None)
