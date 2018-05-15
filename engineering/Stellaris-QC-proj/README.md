@@ -1,11 +1,5 @@
->
-1.比赛链接：[天池工业AI大赛-智能制造质量预测](https://tianchi.aliyun.com/competition/rankingList.htm?season=0&raceId=231633&pageIndex=2)，最终排名89/2529
 
-> 2.Github链接：[IntelligentMachine](https://github.com/Maicius/IntelligentMachine)
-
-> 3.博客地址：[记第一次参加的数据挖掘比赛](http://www.xiaomaidong.com/?p=565)
-
-## 比赛中所用的算法和技术回顾
+## 山东分公司产线焊接生产板卡质量预测与控制
 
 ### 特征工程
 

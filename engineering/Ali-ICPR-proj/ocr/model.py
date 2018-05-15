@@ -89,19 +89,7 @@ def load_model(basemodel, h5_path):
         basemodel.load_weights(model_path)
     return basemodel
 
-def predict(im, basemodel):
-    # Convert image into binary format.
-    im = im.convert('L')
-    # Scalling image.
-    scale = im.size[1]*1.0 / 32
-    w = im.size[0] / scale
-    w = int(w)
-    im = im.resize((w,32))
-    # Convert to 256-grayscale image.
-    img = np.array(im).astype(np.float32)/255.0
-    X  = img.reshape((32,w,1))
-    # X = img.reshape((1, 32, w, 1))
-    X = np.array([X])
+def predict(X, basemodel):
     # Model method with batch data as input to get predict result.    
     y_pred = basemodel.predict(X)
     y_pred = y_pred[:,2:,:]
