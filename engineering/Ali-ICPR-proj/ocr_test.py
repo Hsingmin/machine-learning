@@ -60,11 +60,12 @@ if __name__ =='__main__':
     for sample in test_samples:
         # Preprocess image into array for 'the_input'
         X, y = sample_loader(sample)
-        # result = om.predict(X, pred_model)
-        result = pred_model.predict(X)
+        result = om.predict(X, pred_model)
+        # result = pred_model.predict(X)
         print("---------------------------------------")
-        t = result.argmax(axis=2)[0]
-        print(t.shape)
+        print(result)
+        # t = result.argmax(axis=2)[0]
+        # print(t.shape)
 
 
 

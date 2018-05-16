@@ -27,8 +27,8 @@ VALIDATION_PERCENTAGE = 10
 TEST_PERCENTAGE = 10
 
 # Network arguments setting .
-BATCH_SIZE = 32
-
+# BATCH_SIZE = 32
+BATCH_SIZE = 4
 # Network arguments setting .
 LEARNING_RATE = 0.01
 STEPS = 4000
@@ -121,7 +121,12 @@ def main(argv=None):
             X_batch, y_batch = batch_loader(category='train')
             X, Y = input_allocate(X_batch, y_batch)
             model.train_on_batch(X, Y)
-
+            result = om.predict(X, basemodel)
+            # result = pred_model.predict(X)
+            print("---------------------------------------")
+            print(result)
+            # t = result.argmax(axis=2)[0]
+            # print(t.shape)
             if s % EPOCH == 0:
                 X_validation, y_validation = batch_loader(category='validation')
                 X, Y = input_allocate(X_validation, y_validation)

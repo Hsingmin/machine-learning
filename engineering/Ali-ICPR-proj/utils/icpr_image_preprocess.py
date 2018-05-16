@@ -1,9 +1,10 @@
 
-# image_preprocess.py -- Preprocess the Image .
+# ocpr_image_preprocess.py -- Preprocess the Image .
 
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
+from PIL import Image
 
 # Adjust image color . Define different order to adjust brightness, constrast,
 # hue, saturation and whitening , which may affect the result .
@@ -51,8 +52,8 @@ def preprocess_for_train(image, height, width, bbox):
 		bbox = tf.constant([0.0, 0.0, 1.0, 1.0], dtype=tf.float32, shape=[1,1,4])
 
 	# Reshape image size at first .
-	image = tf.image.resize_images(image,\
-			[height, width], method=np.random.randint(4))
+	image = tf.image.resize_images(image,
+            [height, width], method=np.random.randint(4))
 
 	# Distort image randomly to reduce affect to model of noise .
 	bbox_begin, bbox_size, draw_bbox  = tf.image.sample_distorted_bounding_box(tf.shape(image),
@@ -81,18 +82,27 @@ def preprocess_for_train(image, height, width, bbox):
 	return distorted_image
 
 # Get image raw data in bytes type .
-image_raw_data = tf.gfile.GFile("./to/picture.jpg", "rb").read()
+image_raw_data = tf.gfile.GFile("0603.png", "rb").read()
+img_data = tf.image.decode_png(image_raw_data)
 
 with tf.Session() as sess:
-	img_data = tf.image.decode_jpeg(image_raw_data)
-	boxes = tf.constant([[[0.05, 0.05, 0.9, 0.7], [0.35, 0.4, 0.5, 0.6]]])
+    image = tf.image.resize_images(img_data, [60, 512], method=np.random.randint(4))
+    image = tf.image.convert_image_dtype(image, dtype=tf.uint8)
+    # encoded_image = tf.image.encode_png(image)
 
-	for i in range(6):
+    resized = np.asarray(image.eval(), dtype='uint8')
+    resized_image = Image.fromarray(resized)
+    resized_image.save('resized_image.png')
+    # with tf.gfile.GFile('resize_image.png', 'wb') as f:
+    #    f.write(encoded_image.eval())
+
+    """
+    for i in range(6):
 		# Resize image to 299*299
 		result = preprocess_for_train(img_data, 299, 299, boxes)
 		plt.imshow(result.eval())
 		plt.show()
-
+    """
 
 
 

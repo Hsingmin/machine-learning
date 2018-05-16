@@ -112,7 +112,7 @@ def decode(pred):
         characters = keys.alphabet[:]
         charactersS = characters+u' '
         # Get max value index in axis 2.
-        t = pred.argmax(axis=2)[0]
+        t = pred.argmin(axis=2)[0]
         length = len(t)
         char_list = []
         n = len(characters)

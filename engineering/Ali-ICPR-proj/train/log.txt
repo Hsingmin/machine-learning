@@ -63,3 +63,583 @@ Caused by op 'ctc/CTCLoss', defined at:
 InvalidArgumentError (see above for traceback): Saw a non-null label (index >= num_classes - 1) following a null label, batch: 0 num_classes: 5530 labels: 2270,122,1300
 	 [[Node: ctc/CTCLoss = CTCLoss[ctc_merge_repeated=true, ignore_longer_outputs_than_inputs=false, preprocess_collapse_repeated=false, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/Log, ctc/ToInt64, ctc/ToInt32_2, ctc/ToInt32_1)]]
 
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Caused by op 'ctc/scan/TensorArrayUnstack/strided_slice', defined at:
+  File "train.py", line 163, in <module>
+    main(argv=None)
+  File "train.py", line 112, in main
+    model, basemodel = om.get_model(aligned_height, nclass)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 76, in get_model
+    loss_out = Lambda(ctc_lambda_func, output_shape=(1,), name='ctc')([y_pred, labels, input_length, label_length])
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\engine\topology.py", line 603, in __call__
+    output = self.call(inputs, **kwargs)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\layers\core.py", line 651, in call
+    return self.function(inputs, **arguments)
+  File "D:\python_work\machine-learning\engineering\Ali-ICPR-proj\ocr\model.py", line 29, in ctc_lambda_func
+    return K.ctc_batch_cost(labels, y_pred, input_length, label_length)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3749, in ctc_batch_cost
+    sparse_labels = tf.to_int32(ctc_label_dense_to_sparse(y_true, label_length))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\keras\backend\tensorflow_backend.py", line 3713, in ctc_label_dense_to_sparse
+    initializer=init, parallel_iterations=1)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in scan
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\functional_ops.py", line 536, in <listcomp>
+    elem_ta.unstack(elem) for elem_ta, elem in zip(elems_ta, elems_flat)]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\util\tf_should_use.py", line 107, in wrapped
+    return _add_should_use_warning(fn(*args, **kwargs))
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\tensor_array_ops.py", line 412, in unstack
+    num_elements = array_ops.shape(value)[0]
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 538, in _SliceHelper
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\array_ops.py", line 706, in strided_slice
+    shrink_axis_mask=shrink_axis_mask)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\ops\gen_array_ops.py", line 5429, in strided_slice
+    name=name)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\op_def_library.py", line 787, in _apply_op_helper
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 2956, in create_op
+    op_def=op_def)
+  File "C:\Users\Administrator\AppData\Local\Programs\Python\Python35\lib\site-packages\tensorflow\python\framework\ops.py", line 1470, in __init__
+    self._traceback = self._graph._extract_stack()  # pylint: disable=protected-access
+
+InvalidArgumentError (see above for traceback): slice index 0 of dimension 0 out of bounds.
+	 [[Node: ctc/scan/TensorArrayUnstack/strided_slice = StridedSlice[Index=DT_INT32, T=DT_INT32, begin_mask=0, ellipsis_mask=0, end_mask=0, new_axis_mask=0, shrink_axis_mask=1, _device="/job:localhost/replica:0/task:0/device:CPU:0"](ctc/scan/TensorArrayUnstack/Shape, loss/ctc_loss/Const_1, loss/ctc_loss/Mean/reduction_indices, loss/ctc_loss/Mean/reduction_indices)]]
+
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[248],
+         [245],
+         [250],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[244],
+         [244],
+         [247],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[227],
+         [227],
+         [228],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[228],
+         [226],
+         [227],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[120],
+         [120],
+         [120],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[120],
+         [120],
+         [120],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[238],
+         [238],
+         [238],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[238],
+         [238],
+         [238],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[118],
+         [116],
+         [115],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[118],
+         [118],
+         [118],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[235],
+         [235],
+         [235],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[235],
+         [235],
+         [235],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[150],
+         [150],
+         [150],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[150],
+         [150],
+         [150],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[220],
+         [220],
+         [221],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[220],
+         [220],
+         [220],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[ 52],
+         [ 52],
+         [ 52],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[ 52],
+         [ 52],
+         [ 52],
+         ..., 
+         [  0],
+       ...
+Error when checking model : the list of Numpy arrays that you are passing to your model is not the size the model expected. Expected to see 1 array(s), but instead got the following list of 4 arrays: [array([[[[209],
+         [209],
+         [208],
+         ..., 
+         [  0],
+         [  0],
+         [  0]],
+
+        [[209],
+         [209],
+         [208],
+         ..., 
+         [  0],
+       ...
