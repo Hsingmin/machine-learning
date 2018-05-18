@@ -5,6 +5,13 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
+import os
+
+INPUT_DATA = 'D:/engineering-data/Ali-ICPR-data/train_slice'
+ALLIGNED_DATA = 'D:/engineering-data/Ali-ICPR-data/alligned_slice'
+ALLIGNED_HEIGHT = 64
+ALLIGNED_WIDTH = 256
+NNI = 1
 
 # Adjust image color . Define different order to adjust brightness, constrast,
 # hue, saturation and whitening , which may affect the result .
@@ -34,77 +41,39 @@ def distort_color(image, color_ordering=0):
 	# Normalize value in image tensor . 
 	return tf.clip_by_value(image, 0.0, 1.0)
 
-# Preprocess given image with size and bounding-box as arguments ,
-# converse original image for trianing to neural network input .
-#
-# Preprocess image steps :
-# 	tf.image.decode_jpeg()
-#	tf.image.resize_images()
-# 	tf.sample_distorted_bounding_box()
-#	tf.image.convert_image_dtype()
-#	tf.expand_dims()
-#	tf.image.draw_bounding_boxes()
-#	tf.reshape()
-#	tf.slice()
-def preprocess_for_train(image, height, width, bbox):
-	# Regard whole image as the attention part if bbox is none .
-	if bbox is None:
-		bbox = tf.constant([0.0, 0.0, 1.0, 1.0], dtype=tf.float32, shape=[1,1,4])
+# Get all slices filename.
+def get_images(path):
+    images = []
+    for rootdir, subdirs, files in os.walk(path):
+        for file in files:
+            images.append(os.path.join(rootdir, file))
+    return images
 
-	# Reshape image size at first .
-	image = tf.image.resize_images(image,
-            [height, width], method=np.random.randint(4))
+def main(argv=None):
 
-	# Distort image randomly to reduce affect to model of noise .
-	bbox_begin, bbox_size, draw_bbox  = tf.image.sample_distorted_bounding_box(tf.shape(image),
-			bounding_boxes=bbox, min_object_covered=0.1)
+    image_list = get_images(INPUT_DATA)
+    with tf.Session() as sess:
+        for image in image_list:
+            # Get image raw data in bytes type .
+            image_raw_data = tf.gfile.GFile(image, "rb").read()
+            img_data = tf.image.decode_png(image_raw_data)
+            label = os.path.basename(image).split('.')[0]
+            print("Preprocessing %s ============== " %(label))
 
-	# Convert image tensor data type .
-	#
-	# Image data type from uint8 to tf.float32 .
-	# Expand dimensions from 3-D to 4-D .
+            # Resize image into (height=64, width=256) 
+            # with Nearest Neighbour Interpolation Algorithm. 
+            image = tf.image.resize_images(img_data, [ALLIGNED_HEIGHT, ALLIGNED_WIDTH], method=NNI)
+            image = tf.image.convert_image_dtype(image, dtype=tf.uint8)
 
-	if image.dtype != tf.float32:
-		image = tf.image.convert_image_dtype(image, dtype=tf.float32)
-
-	image = tf.expand_dims(image, 0)
-
-	# tf.image.draw_bounding_boxes(arg1=image, arg2=draw_box)
-	#
-	# image : dimendion expanded 
-	# draw_box : the 3rd result returned by tf.image.sample_distorted_bounding_box()
-	distorted_image = tf.image.draw_bounding_boxes(image, draw_bbox)
-	distorted_image = tf.reshape(distorted_image, [height, width, 3])
-	distorted_image = tf.slice(distorted_image, bbox_begin, bbox_size)
-	distorted_image = tf.image.random_flip_left_right(distorted_image)
-	distorted_image = distort_color(distorted_image, np.random.randint(5))
-
-	return distorted_image
-
-# Get image raw data in bytes type .
-image_raw_data = tf.gfile.GFile("0603.png", "rb").read()
-img_data = tf.image.decode_png(image_raw_data)
-
-with tf.Session() as sess:
-    image = tf.image.resize_images(img_data, [60, 512], method=np.random.randint(4))
-    image = tf.image.convert_image_dtype(image, dtype=tf.uint8)
-    # encoded_image = tf.image.encode_png(image)
-
-    resized = np.asarray(image.eval(), dtype='uint8')
-    resized_image = Image.fromarray(resized)
-    resized_image.save('resized_image.png')
-    # with tf.gfile.GFile('resize_image.png', 'wb') as f:
-    #    f.write(encoded_image.eval())
-
-    """
-    for i in range(6):
-		# Resize image to 299*299
-		result = preprocess_for_train(img_data, 299, 299, boxes)
-		plt.imshow(result.eval())
-		plt.show()
-    """
-
-
+            resized = np.asarray(image.eval(), dtype='uint8')
+            resized_image = Image.fromarray(resized)
+            try:
+                resized_image.save(os.path.join(ALLIGNED_DATA, label + '.png'))
+            except Exception as e:
+                print(e)
+                pass
+if __name__ == '__main__':
+    tf.app.run()
 
 
 
