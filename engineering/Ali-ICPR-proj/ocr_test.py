@@ -10,10 +10,11 @@ import train.train as tt
 import data.dataset as dd
 import codecs
 
-test_path = './tmp/test'
-h5_path = 'd:/python_work/h5/model823.1.h5'
+test_path = 'd:/python_work/framedemo/Ali-ICPR-proj/tmp/test'
+# h5_path = 'd:/python_work/h5/model19.30.h5'
+h5_path = 'd:/python_work/h5/model487.92.h5'
 
-TRUNCATED_WIDTH = 512
+TRUNCATED_WIDTH = 256
 N_LEN = 10
 
 def get_test_samples(path):
@@ -28,30 +29,23 @@ def sample_loader(img_dir):
     X_sample = []
     y_label = []
     image_raw = Image.open(img_dir)
-    # image = np.array(image_raw.convert('RGB'))
-    alligned_height = 32
+    alligned_height = 64
     bimage = image_raw.convert('L')
-    scale = bimage.size[1]*1.0/alligned_height
-    width = int(bimage.size[0]/scale)
-    image = bimage.resize((width, alligned_height))
-    # image.save(os.path.join('./to', os.path.basename(img_dir)))
-    image = np.array(image)
-    # print(image)
+    image = np.array(bimage)
     X_sample.append(image)
     y_label.append(os.path.basename(img_dir).split('.')[0])
 
-    aligned_sample = dd.AlignedBatch(alligned_height, TRUNCATED_WIDTH)
-    X_sample = np.array(aligned_sample(X_sample))
+    X_sample = np.array(X_sample)
     aligned_onehot = dd.AlignedOnehot(N_LEN, characters)
-    # y_label = np.array(aligned_onehot(y_label))
+    y_label = np.array(aligned_onehot(y_label))
 
-    X = X_sample.reshape((1, 32, -1, 1))
+    X = X_sample.reshape((1, 64, 256, 1))
     y = y_label
     return X, y
 
 if __name__ =='__main__':
     characters = keys.alphabet[:]
-    height = 32
+    height = 64
     nclass = len(characters)
     model, basemodel = om.get_model(height, nclass)
     pred_model = om.load_model(basemodel, h5_path)
@@ -65,7 +59,7 @@ if __name__ =='__main__':
         print("---------------------------------------")
         print(result)
         # t = result.argmax(axis=2)[0]
-        # print(t.shape)
+        # print(t)
 
 
 

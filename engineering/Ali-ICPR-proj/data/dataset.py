@@ -18,7 +18,7 @@ import sys
 sys.path.append(r"D:\python_work\machine-learning\engineering\Ali-ICPR-proj")
 import ocr.model as om
 
-TRUNCATED_WIDTH = 512
+TRUNCATED_WIDTH = 256
 TRUNCATED_LENGTH = 10
 characters = om.keys.alphabet[:]
 
@@ -62,7 +62,7 @@ class Dataset(object):
         return self.validation
 
 class AlignedBatch(object):
-    def __init__(self, height=32, width=TRUNCATED_WIDTH):
+    def __init__(self, height=64, width=TRUNCATED_WIDTH):
         self.height = height
         self.width = width
 

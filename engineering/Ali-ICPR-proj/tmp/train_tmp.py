@@ -27,10 +27,11 @@ VALIDATION_PERCENTAGE = 10
 TEST_PERCENTAGE = 10
 
 # Network arguments setting .
+# BATCH_SIZE = 32
 BATCH_SIZE = 32
 # Network arguments setting .
 LEARNING_RATE = 0.01
-STEPS = 4000
+STEPS = 4
 
 characters = om.keys.alphabet[:]
 
@@ -75,13 +76,15 @@ def batch_loader(category=None):
 
     for img_dir in batch_list:
         image_raw = Image.open(img_dir)
+        # image = np.array(image_raw.convert('RGB'))
         alligned_height = 64
         bimage = image_raw.convert('L')
-        # scale = bimage.size[1]*1.0/alligned_height
-        # width = int(bimage.size[0]/scale)
-        # image = bimage.resize((width, alligned_height))
+        scale = bimage.size[1]*1.0/alligned_height
+        width = int(bimage.size[0]/scale)
+        image = bimage.resize((width, alligned_height))
         # image.save(os.path.join('./to', os.path.basename(img_dir)))
-        image = np.array(bimage)
+        image = np.array(image)
+        # print(image)
         X_batch.append(image)
 
     # aligned_batch = dd.AlignedBatch(alligned_height, TRUNCATED_WIDTH)
@@ -105,9 +108,9 @@ def input_allocate(X_batch, y_batch):
 # Train ocr model .
 def main(argv=None):
     aligned_height = 64
-    nclass = len(characters)
-    global_loss = 1000
-    model, basemodel = om.get_model(aligned_height, nclass)
+    # nclass = len(characters)
+    # global_loss = 1000
+    # model, basemodel = om.get_model(aligned_height, nclass)
 
     # Train model input:
     #   input = Input(name='the_input', shape=(height, None, 1))
@@ -115,43 +118,18 @@ def main(argv=None):
     #   input_length = Input(name='input_length', shape=[1], dtype='int64')
     #   label_length = Input(name='label_length', shape=[1], dtype='int64')
     for s in range(STEPS):
-        try:
-            X_batch, y_batch = batch_loader(category='train')
-            X, Y = input_allocate(X_batch, y_batch)
-            model.train_on_batch(X, Y)
-
-            if s % EPOCH == 0:
-                X_validation, y_validation = batch_loader(category='validation')
-                X, Y = input_allocate(X_validation, y_validation)
-                loss = model.evaluate(X, Y)
-                print('OCR model training: %d steps, with loss = %f' %(s, loss))
-                if loss < global_loss:
-                    global_loss = loss
-                    path = './h5/model{}.h5'.format(loss)
-                    basemodel.save(path)
-        except Exception as e:
-            print(e)
-            with codecs.open('log.txt', 'a', 'utf-8') as f:
-                f.write(str(e)+'\r\n')
-            pass
-
-    """
-    for s in range(STEPS):
         X_batch, y_batch = batch_loader(category='train')
+        print(X_batch.shape)
+        print("---------------------------------------")
+        print(y_batch.shape)
         X, Y = input_allocate(X_batch, y_batch)
-        model.train_on_batch(X, Y)
-
-        if s % EPOCH == 0:
-            X_validation, y_validation = batch_loader(category='validation')
-            X, Y = input_allocate(X_validation, y_validation)
-            loss = model.evaluate(X, Y)
-            print('OCR model training: %d steps, with loss = %f' %(s, loss))
-            if loss < global_loss:
-                global_loss = loss
-                path = './h5/model{}.h5'.format(loss)
-                basemodel.save(path)
-    """
-
+        # model.train_on_batch(X, Y)
+        # result = om.predict(X, basemodel)
+        # result = pred_model.predict(X)
+        print("---------------------------------------")
+        # print(X)
+        print("---------------------------------------")
+        # print(Y)
 if __name__ == '__main__':
 	main(argv=None)
 
