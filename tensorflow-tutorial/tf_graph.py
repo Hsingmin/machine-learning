@@ -32,37 +32,41 @@ accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 print("++++++++++++++ softmax regression accuracy : +++++++++++++++")
 print(accuracy.eval({x: mnist.test.images, y_: mnist.test.labels}))
 """
-"""
 g1 = tf.Graph()
 with g1.as_default():
-    v = tf.get_variable("v", shape=[1], initializer=tf.zeros_initializer(dtype=tf.float64))
-    u = tf.Variable(tf.random_normal([1], stddev=0.01), name="u")
-    # u = tf.get_variable("u", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01))
-    result1 = v + u
+    with tf.variable_scope("g1_scope", reuse=tf.AUTO_REUSE) as scope:
+        v = tf.get_variable("v", shape=[1], initializer=tf.zeros_initializer(dtype=tf.float32))
+        w = tf.Variable(initial_value=[2.], name='w', dtype=tf.float32)
+        # w = tf.get_variable("w", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01))
+        u = tf.get_variable("u", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01, dtype=tf.float32))
+        result1 = v + u + w
 
 with tf.Session(graph=g1) as sess:
     sess.run([tf.global_variables_initializer(),
               tf.local_variables_initializer()])
-    with tf.variable_scope("", reuse=tf.AUTO_REUSE):
-        print(sess.run(tf.get_variable("u")))
-        print(sess.run(tf.get_variable("v")))
-        print(result1.eval(session=sess))
+    print("In graph1 ================= ")
+    print(sess.run(v))
+    print(sess.run(u))
+    print(sess.run(w))
+    print(result1.eval(session=sess))
 
 g2 = tf.Graph()
 with g2.as_default():
-    v = tf.get_variable("v", shape=[1], initializer=tf.ones_initializer(dtype=tf.float64))
-    u = tf.Variable(tf.random_normal([1], stddev=0.01), name="u")
-    # u = tf.get_variable("u", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01))
-    result2 = v + u
+    with tf.variable_scope("g2_scope", reuse=tf.AUTO_REUSE) as scope:
+        v = tf.get_variable("v", shape=[1], initializer=tf.ones_initializer(dtype=tf.float32))
+        w = tf.Variable(initial_value=[2.], name='w', dtype=tf.float32)
+        # w = tf.get_variable("w", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01))
+        u = tf.get_variable("u", shape=[1], initializer=tf.random_normal_initializer(stddev=0.01, dtype=tf.float32))
+        result2 = v + u + w
 
 with tf.Session(graph=g2) as sess:
     sess.run([tf.global_variables_initializer(),
               tf.local_variables_initializer()])
-    with tf.variable_scope("", reuse=tf.AUTO_REUSE):
-        print(sess.run(tf.get_variable("u")))
-        print(sess.run(tf.get_variable("v")))
-        print(result2.eval(session=sess))
-"""
+    print("In graph2 ================= ")
+    print(sess.run(v))
+    print(sess.run(u))
+    print(sess.run(w))
+    print(result2.eval(session=sess))
 """
 with tf.name_scope('name_scope_x'):
     var1 = tf.get_variable(name='var1', shape=[1], dtype=tf.float32)
@@ -85,29 +89,51 @@ with tf.Session() as sess:
     print(var1.name, sess.run(var1))
     print(var2.name, sess.run(var2))
 """
+# 在tf.name_scope下，tf.get_variable()创建的变量名不受name_scope的影响，并且在
+# 未指定共享变量时，重名会报错，tf.Variable()则会检测有没有变量重名，若有则进行处理
+# 若使用tf.get_variable()创建变量，且没有设置共享变量，重名会报错
+# 因此，需要共享变量时，使用tf.variable_scope()
+"""
+g1 = tf.Graph()
 
-with tf.variable_scope('variable_scope_y') as scope:
-    var1 = tf.get_variable(name='var1', shape=[1], dtype=tf.float32)
-    scope.reuse_variables()
-    var1_reuse = tf.get_variable(name='var1')
-    var2 = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
-    var2_reuse = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
+with g1.as_default():
+    with tf.variable_scope('variable_scope_x') as scope:
+        var1 = tf.get_variable(name='var1', shape=[1], dtype=tf.float32)
+        scope.reuse_variables()
+        var1_reuse = tf.get_variable(name='var1')
+        var2 = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
+        var2_reuse = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
+        result = var1+var1_reuse+var2+var2_reuse
 
-with tf.Session() as sess:
+
+with tf.Session(graph=g1) as sess:
     sess.run(tf.global_variables_initializer())
     print(var1.name, sess.run(var1))
     print(var1_reuse.name, sess.run(var1_reuse))
     print(var2.name, sess.run(var2))
     print(var2_reuse.name, sess.run(var2_reuse))
+    print("In graph1, get result = ", result.eval(session=sess))
+
+g2 = tf.Graph()
+
+with g2.as_default():
+    with tf.variable_scope('variable_scope_y') as scope:
+        var1 = tf.get_variable(name='var1', shape=[1], dtype=tf.float32)
+        scope.reuse_variables()
+        var1_reuse = tf.get_variable(name='var1')
+        var2 = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
+        var2_reuse = tf.Variable(initial_value=[2.], name='var2', dtype=tf.float32)
+        result = var1+var1_reuse+var2+var2_reuse
 
 
-
-
-
-
-
-
-
+with tf.Session(graph=g2) as sess:
+    sess.run(tf.global_variables_initializer())
+    print(var1.name, sess.run(var1))
+    print(var1_reuse.name, sess.run(var1_reuse))
+    print(var2.name, sess.run(var2))
+    print(var2_reuse.name, sess.run(var2_reuse))
+    print("In graph2, get result = ", result.eval(session=sess))
+"""
 
 
 
